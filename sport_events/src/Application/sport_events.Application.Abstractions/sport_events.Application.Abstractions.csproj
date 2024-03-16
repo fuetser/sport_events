@@ -6,6 +6,9 @@
 
     <ItemGroup>
         <PackageReference Include="SourceKit.Generators.Builder"/>
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+		<PackageReference Include="Itmo.Dev.Platform.Postgres" />
+		<PackageReference Include="Itmo.Dev.Platform.Common" />
     </ItemGroup>
 
 </Project>
