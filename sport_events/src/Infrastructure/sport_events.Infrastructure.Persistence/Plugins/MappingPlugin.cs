@@ -1,7 +1,7 @@
 using Itmo.Dev.Platform.Postgres.Plugins;
 using Npgsql;
 
-namespace sport_events.Infrastructure.Persistence.Plugins;
+namespace SportEvents.Infrastructure.Persistence.Plugins;
 
 /// <summary>
 ///     Plugin for configuring NpgsqlDataSource's mappings

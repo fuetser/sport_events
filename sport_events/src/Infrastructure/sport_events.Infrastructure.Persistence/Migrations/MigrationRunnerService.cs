@@ -2,7 +2,7 @@ using Itmo.Dev.Platform.Postgres.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace sport_events.Infrastructure.Persistence.Migrations;
+namespace SportEvents.Infrastructure.Persistence.Migrations;
 
 /// <summary>
 ///     Background service for applying migrations.

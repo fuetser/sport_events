@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace sport_events.Application.Extensions;
+namespace SportEvents.Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {

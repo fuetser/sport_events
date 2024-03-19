@@ -7,13 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A5DDAC88-3B8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Appication", "Appication", "{472EDB5E-9F2C-4551-AC96-D52701C1A636}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sport_events.Application", "src\Application\sport_events.Application\sport_events.Application.csproj", "{CB41BAB3-2742-49A4-9534-C33C9CC21103}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportEvents.Application", "src\Application\sport_events.Application\SportEvents.Application.csproj", "{CB41BAB3-2742-49A4-9534-C33C9CC21103}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sport_events.Application.Abstractions", "src\Application\sport_events.Application.Abstractions\sport_events.Application.Abstractions.csproj", "{0284A1FB-1B1E-4B7A-B6B3-4D34E5CF287A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportEvents.Application.Abstractions", "src\Application\sport_events.Application.Abstractions\SportEvents.Application.Abstractions.csproj", "{0284A1FB-1B1E-4B7A-B6B3-4D34E5CF287A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sport_events.Application.Contracts", "src\Application\sport_events.Application.Contracts\sport_events.Application.Contracts.csproj", "{F2C0DDDE-EECA-4AA9-8D04-A4B054A39D4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportEvents.Application.Contracts", "src\Application\sport_events.Application.Contracts\SportEvents.Application.Contracts.csproj", "{F2C0DDDE-EECA-4AA9-8D04-A4B054A39D4F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sport_events.Application.Models", "src\Application\sport_events.Application.Models\sport_events.Application.Models.csproj", "{2E598FB2-8270-4A19-B393-8A67583EDE40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportEvents.Application.Models", "src\Application\sport_events.Application.Models\SportEvents.Application.Models.csproj", "{2E598FB2-8270-4A19-B393-8A67583EDE40}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{763BFE0A-AFCF-4440-931D-52F4F1FD5DD0}"
 	ProjectSection(SolutionItems) = preProject
@@ -26,11 +26,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{683CE8ED-DAEA-4EAB-B1B4-FF5098763CFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sport_events.Infrastructure.Persistence", "src\Infrastructure\sport_events.Infrastructure.Persistence\sport_events.Infrastructure.Persistence.csproj", "{E0C7A0FA-E3B6-4C7C-8360-CD72806AAC66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportEvents.Infrastructure.Persistence", "src\Infrastructure\sport_events.Infrastructure.Persistence\SportEvents.Infrastructure.Persistence.csproj", "{E0C7A0FA-E3B6-4C7C-8360-CD72806AAC66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sport_events", "src\sport_events\sport_events.csproj", "{AE85F8D2-4986-40AE-A92C-683CE1DB59BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportEvents", "src\sport_events\SportEvents.csproj", "{AE85F8D2-4986-40AE-A92C-683CE1DB59BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sport_events.Presentation.Http", "src\Presentation\sport_events.Presentation.Http\sport_events.Presentation.Http.csproj", "{AE079871-926E-427E-9F16-8FFD3C6B6CC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SportEvents.Presentation.Http", "src\Presentation\sport_events.Presentation.Http\SportEvents.Presentation.Http.csproj", "{AE079871-926E-427E-9F16-8FFD3C6B6CC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
