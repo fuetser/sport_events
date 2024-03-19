@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <ProjectReference Include="..\sport_events.Application.Models\SportEvents.Application.Models.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="SourceKit.Generators.Builder" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+		<PackageReference Include="Itmo.Dev.Platform.Postgres" />
+		<PackageReference Include="Itmo.Dev.Platform.Common" />
+    </ItemGroup>
+
+</Project>

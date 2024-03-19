@@ -1,5 +1,5 @@
-using sport_events.Application.Abstractions.Persistence;
+using SportEvents.Application.Contracts.Persistence;
 
-namespace sport_events.Infrastructure.Persistence;
+namespace SportEvents.Infrastructure.Persistence;
 
 public class PersistenceContext : IPersistenceContext { }

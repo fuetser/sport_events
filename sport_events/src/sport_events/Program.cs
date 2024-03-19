@@ -2,9 +2,9 @@
 
 using Itmo.Dev.Platform.Common.Extensions;
 using Itmo.Dev.Platform.Logging.Extensions;
-using sport_events.Application.Extensions;
-using sport_events.Infrastructure.Persistence.Extensions;
-using sport_events.Presentation.Http.Extensions;
+using SportEvents.Application.Extensions;
+using SportEvents.Infrastructure.Persistence.Extensions;
+using SportEvents.Presentation.Http.Extensions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -24,13 +24,10 @@ builder.Services
 
 builder.Services.AddSwaggerGen().AddEndpointsApiExplorer();
 
-
-
 builder.Host.AddPlatformSerilog(builder.Configuration);
 builder.Services.AddUtcDateTimeProvider();
 
 WebApplication app = builder.Build();
-
 
 app.UseRouting();
 app.UseSwagger();

@@ -1,4 +1,4 @@
-namespace sport_events.Application.Abstractions.Persistence;
+namespace SportEvents.Application.Contracts.Persistence;
 
 public interface IPersistenceContext
 {

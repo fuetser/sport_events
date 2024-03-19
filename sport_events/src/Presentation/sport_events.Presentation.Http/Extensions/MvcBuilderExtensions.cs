@@ -1,4 +1,4 @@
-﻿namespace sport_events.Presentation.Http.Extensions;
+﻿namespace SportEvents.Presentation.Http.Extensions;
 
 public static class MvcBuilderExtensions
 {

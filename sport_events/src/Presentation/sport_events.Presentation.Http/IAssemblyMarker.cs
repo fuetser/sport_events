@@ -1,3 +1,3 @@
-namespace sport_events.Presentation.Http;
+namespace SportEvents.Presentation.Http;
 
 internal interface IAssemblyMarker { }
