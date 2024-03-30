@@ -1,108 +1,84 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SportEvents.Application.Contracts;
 using SportEvents.Application.Models.Requests;
-using SportEvents.Application.Models.Responses;
-using System;
-using System.Collections.Generic;
 
-namespace SportEvents.Presentation.Http.Controllers
+namespace SportEvents.Presentation.Http.Controllers;
+
+[ApiController]
+[Route("/api/v1/organizers")]
+public class OrganizerController(IOrganizerService organizerService) : ControllerBase
 {
-    [ApiController]
-    [Route("/api/v1/organizers")]
-    public class OrganizerController : ControllerBase
+    private readonly IOrganizerService _organizerService = organizerService;
+
+    [HttpPost]
+    public IActionResult CreateOrganizer(OrganizerCreateRequest request)
     {
-        private readonly IOrganizerService _organizerService;
-
-        public OrganizerController(IOrganizerService organizerService)
+        try
         {
-            _organizerService = organizerService;
+            var success = _organizerService.CreateOrganizer(request);
+            return success ? Created() : BadRequest(new { errors = new List<string> { "Failed to create organizer." } });
         }
-
-        [HttpPost]
-        public IActionResult CreateOrganizer(OrganizerCreateRequest request)
+        catch (Exception ex)
         {
-            try
-            {
-                var success = _organizerService.CreateOrganizer(request);
-                if (success)
-                {
-                    return Created($"/api/v1/organizers/{request.Id}", new { id = request.Id, name = request.Name });
-                }
-                return BadRequest(new { errors = new List<string> { "Failed to create organizer." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
         }
+    }
 
-        [HttpGet]
-        public IActionResult GetOrganizers()
+    [HttpGet]
+    public IActionResult GetOrganizers()
+    {
+        try
         {
-            try
-            {
-                var organizers = _organizerService.GetOrganizers();
-                return Ok(organizers);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            var organizers = _organizerService.GetOrganizers();
+            return Ok(organizers);
         }
-
-        [HttpGet("{organizerId}")]
-        public IActionResult GetOrganizer(int organizerId)
+        catch (Exception ex)
         {
-            try
-            {
-                var organizer = _organizerService.GetOrganizerById(organizerId);
-                if (organizer != null)
-                {
-                    return Ok(organizer);
-                }
-                return NotFound(new { errors = new List<string> { "Organizer not found." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
         }
+    }
 
-        [HttpPatch("{organizerId}")]
-        public IActionResult UpdateOrganizer(int organizerId, OrganizerUpdateRequest request)
+    [HttpGet("{organizerId}")]
+    public IActionResult GetOrganizer(int organizerId)
+    {
+        try
         {
-            try
-            {
-                request.Id = organizerId;
-                var success = _organizerService.UpdateOrganizer(request);
-                if (success)
-                {
-                    return Ok(new { id = organizerId, name = request.Name });
-                }
-                return BadRequest(new { errors = new List<string> { "Failed to update organizer." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            var organizer = _organizerService.GetOrganizerById(organizerId);
+            return organizer != null ? Ok(organizer) : NotFound(new { errors = new List<string> { "Organizer not found." } });
         }
-
-        [HttpDelete("{organizerId}")]
-        public IActionResult DeleteOrganizer(int organizerId)
+        catch (Exception ex)
         {
-            try
-            {
-                var success = _organizerService.DeleteOrganizer(organizerId);
-                if (success)
-                {
-                    return Ok(new { message = "Organizer deleted" });
-                }
-                return BadRequest(new { errors = new List<string> { "Failed to delete organizer." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+        }
+    }
+
+    [HttpPatch("")]
+    public IActionResult UpdateOrganizer(OrganizerUpdateRequest request)
+    {
+        try
+        {
+            var success = _organizerService.UpdateOrganizer(request);
+            return success ? Ok() : BadRequest(new { errors = new List<string> { "Failed to update organizer." } });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+        }
+    }
+
+    [HttpDelete("{organizerId}")]
+    public IActionResult DeleteOrganizer(int organizerId)
+    {
+        try
+        {
+            var success = _organizerService.DeleteOrganizer(organizerId);
+            return success
+                ? Ok(new { message = "Organizer deleted" })
+                : BadRequest(new { errors = new List<string> { "Failed to delete organizer." } });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
         }
     }
 }

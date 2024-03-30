@@ -1,90 +1,68 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SportEvents.Application.Contracts;
 using SportEvents.Application.Models.Requests;
-using SportEvents.Application.Models.Responses;
-using System;
-using System.Collections.Generic;
 
-namespace SportEvents.Presentation.Http.Controllers
+namespace SportEvents.Presentation.Http.Controllers;
+
+[ApiController]
+[Route("/api/v1/sports")]
+public class SportController(ISportService sportService) : ControllerBase
 {
-    [ApiController]
-    [Route("/api/v1/sports")]
-    public class SportController : ControllerBase
+    private readonly ISportService _sportService = sportService;
+
+    [HttpGet]
+    public IActionResult GetSports()
     {
-        private readonly ISportService _sportService;
-
-        public SportController(ISportService sportService)
+        try
         {
-            _sportService = sportService;
+            var sports = _sportService.GetSports();
+            return Ok(sports);
         }
-
-        [HttpGet]
-        public IActionResult GetSports()
+        catch (Exception ex)
         {
-            try
-            {
-                var sports = _sportService.GetSports();
-                return Ok(sports);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
         }
+    }
 
-        [HttpPost]
-        public IActionResult CreateSport([FromBody] SportCreateRequest request)
+    [HttpPost]
+    public IActionResult CreateSport([FromBody] SportCreateRequest request)
+    {
+        try
         {
-            try
-            {
-                var success = _sportService.CreateSport(request);
-                if (success)
-                {
-                    return Created($"/api/v1/sports/{request.Name}", new { id = request.Name, name = request.Name });
-                }
-                return BadRequest(new { errors = new List<string> { "Failed to create sport." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            var success = _sportService.CreateSport(request);
+            return success ? Created() : BadRequest(new { errors = new List<string> { "Failed to create sport." } });
         }
-
-        [HttpPatch("{sportId}")]
-        public IActionResult UpdateSport(int sportId, [FromBody] SportUpdateRequest request)
+        catch (Exception ex)
         {
-            try
-            {
-                request.Id = sportId;
-                var success = _sportService.UpdateSport(request);
-                if (success)
-                {
-                    return Ok(new { id = sportId, name = request.Name });
-                }
-                return BadRequest(new { errors = new List<string> { "Failed to update sport." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
         }
+    }
 
-        [HttpDelete("{sportId}")]
-        public IActionResult DeleteSport(int sportId)
+    [HttpPatch("")]
+    public IActionResult UpdateSport(SportUpdateRequest request)
+    {
+        try
         {
-            try
-            {
-                var success = _sportService.DeleteSport(sportId);
-                if (success)
-                {
-                    return Ok(new { message = "Sport deleted" });
-                }
-                return BadRequest(new { errors = new List<string> { "Failed to delete sport." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            var success = _sportService.UpdateSport(request);
+            return success ? Ok() : BadRequest(new { errors = new List<string> { "Failed to update sport." } });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+        }
+    }
+
+    [HttpDelete("{sportId}")]
+    public IActionResult DeleteSport(int sportId)
+    {
+        try
+        {
+            var success = _sportService.DeleteSport(sportId);
+            return success ? Ok(new { message = "Sport deleted" }) : BadRequest(new { errors = new List<string> { "Failed to delete sport." } });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
         }
     }
 }

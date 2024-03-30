@@ -4,9 +4,9 @@ using SportEvents.Application.Models.Requests;
 using SportEvents.Application.Models.Responses;
 
 namespace SportEvents.Application.Services;
-public class OrganizerService : IOrganizerService
+public class OrganizerService(IOrganizerRepository organizerRepository) : IOrganizerService
 {
-    private readonly IOrganizerRepository _organizerRepository;
+    private readonly IOrganizerRepository _organizerRepository = organizerRepository;
 
     public bool CreateOrganizer(OrganizerCreateRequest request)
     {

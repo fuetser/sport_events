@@ -19,5 +19,5 @@ public class EventModel(string title, string description, DateTime startTime, Da
 
     public IList<OrganizerModel> Organizers { get; } = [];
 
-    public IList<SportModel> Participants { get; } = [];
+    public IList<ParticipantModel> Participants { get; } = [];
 }

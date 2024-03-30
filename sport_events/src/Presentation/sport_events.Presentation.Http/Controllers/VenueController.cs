@@ -1,90 +1,70 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SportEvents.Application.Contracts;
 using SportEvents.Application.Models.Requests;
-using SportEvents.Application.Models.Responses;
-using System;
-using System.Collections.Generic;
 
-namespace SportEvents.Presentation.Http.Controllers
+namespace SportEvents.Presentation.Http.Controllers;
+
+[ApiController]
+[Route("/api/v1/venues")]
+public class VenueController(IVenueService venueService) : ControllerBase
 {
-    [ApiController]
-    [Route("/api/v1/venues")]
-    public class VenueController : ControllerBase
+    private readonly IVenueService _venueService = venueService;
+
+    [HttpGet]
+    public IActionResult GetVenues()
     {
-        private readonly IVenueService _venueService;
-
-        public VenueController(IVenueService venueService)
+        try
         {
-            _venueService = venueService;
+            var venues = _venueService.GetVenues();
+            return Ok(venues);
         }
-
-        [HttpGet]
-        public IActionResult GetVenues()
+        catch (Exception ex)
         {
-            try
-            {
-                var venues = _venueService.GetVenues();
-                return Ok(venues);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
         }
+    }
 
-        [HttpPost]
-        public IActionResult CreateVenue(VenueCreateRequest request)
+    [HttpPost]
+    public IActionResult CreateVenue(VenueCreateRequest request)
+    {
+        try
         {
-            try
-            {
-                var success = _venueService.CreateVenue(request);
-                if (success)
-                {
-                    return Created($"/api/v1/venues/{request.Id}", new VenueResponse { Id = request.Id, Name = request.Name });
-                }
-                return BadRequest(new { errors = new List<string> { "Failed to create venue." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            var success = _venueService.CreateVenue(request);
+            return success ? Created() : BadRequest(new { errors = new List<string> { "Failed to create venue." } });
         }
-
-        [HttpPatch("{venueId}")]
-        public IActionResult UpdateVenue(int venueId, VenueUpdateRequest request)
+        catch (Exception ex)
         {
-            try
-            {
-                request.Id = venueId;
-                var success = _venueService.UpdateVenue(request);
-                if (success)
-                {
-                    return Ok(new VenueResponse { Id = venueId, Name = request.Name });
-                }
-                return BadRequest(new { errors = new List<string> { "Failed to update venue." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
         }
+    }
 
-        [HttpDelete("{venueId}")]
-        public IActionResult DeleteVenue(int venueId)
+    [HttpPatch("")]
+    public IActionResult UpdateVenue(VenueUpdateRequest request)
+    {
+        try
         {
-            try
-            {
-                var success = _venueService.DeleteVenue(venueId);
-                if (success)
-                {
-                    return Ok(new { message = "Место проведения удалено" });
-                }
-                return BadRequest(new { errors = new List<string> { "Failed to delete venue." } });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { errors = new List<string> { ex.Message } });
-            }
+            var success = _venueService.UpdateVenue(request);
+            return success ? Ok() : BadRequest(new { errors = new List<string> { "Failed to update venue." } });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+        }
+    }
+
+    [HttpDelete("{venueId}")]
+    public IActionResult DeleteVenue(int venueId)
+    {
+        try
+        {
+            var success = _venueService.DeleteVenue(venueId);
+            return success
+                ? Ok(new { message = "Место проведения удалено" })
+                : BadRequest(new { errors = new List<string> { "Failed to delete venue." } });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { errors = new List<string> { ex.Message } });
         }
     }
 }
