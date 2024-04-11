@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SportEvents.Application.Models.Entities;
+using SportEvents.Infrastructure.Persistence.Contexts.Configurations;
 
 namespace SportEvents.Infrastructure.Persistence.Contexts;
 public class ApplicationDbContext : DbContext
@@ -27,7 +28,13 @@ public class ApplicationDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-        // Сюда добавлять различные конфигурации ваших файлов
+        modelBuilder.ApplyConfiguration(new EventConfiguration());
+        modelBuilder.ApplyConfiguration(new OrganizerConfiguration());
+        modelBuilder.ApplyConfiguration(new ParticipantConfiguration());
+        modelBuilder.ApplyConfiguration(new SportConfiguration());
+        modelBuilder.ApplyConfiguration(new TeamConfiguration());
+        modelBuilder.ApplyConfiguration(new VenueConfiguration());
+
         base.OnModelCreating(modelBuilder);
     }
 }
