@@ -7,10 +7,7 @@ public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext() { }
 
-    public ApplicationDbContext(DbContextOptions options) : base(options)
-    {
-        Database.EnsureCreated();
-    }
+    public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
     required public DbSet<Organizer> Organizers { get; set; }
 
