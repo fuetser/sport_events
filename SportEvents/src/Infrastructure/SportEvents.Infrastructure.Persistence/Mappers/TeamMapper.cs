@@ -9,6 +9,7 @@ public class TeamMapper
     {
         return new Team
         {
+            Id = model.Id,
             Name = model.Name,
             Description = model.Description,
             SportId = model.SportId,
@@ -19,6 +20,7 @@ public class TeamMapper
     {
         return new TeamModel
         {
+            Id = team.Id,
             Name = team.Name,
             Description = team.Description,
             SportId = team.SportId,

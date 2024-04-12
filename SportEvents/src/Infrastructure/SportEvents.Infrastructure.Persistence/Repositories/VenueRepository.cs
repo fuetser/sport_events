@@ -31,10 +31,14 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
     {
         try
         {
-            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException();
+            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
 
             _context.Venues.Remove(venue);
             _context.SaveChanges();
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -46,8 +50,12 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
     {
         try
         {
-            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException();
+            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
             return VenueMapper.EntityToModel(venue);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -72,8 +80,12 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
     {
         try
         {
-            var targetEvent = _context.Events.Find(eventId) ?? throw new NotFoundException();
+            var targetEvent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
             return ConvertVenuesToModels(targetEvent.Venues);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -85,7 +97,7 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
     {
         try
         {
-            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException();
+            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
 
             venue.Name = model.Name;
             venue.Description = model.Description;
@@ -94,7 +106,11 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
 
             _context.SaveChanges();
 
-            return model;
+            return VenueMapper.EntityToModel(venue);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {

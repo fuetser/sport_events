@@ -31,12 +31,13 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
     {
         try
         {
-            Sport? sport = _context.Sports.Find(sportId);
-            if (sport is null)
-                throw new NotFoundException();
-
+            Sport sport = _context.Sports.Find(sportId) ?? throw new NotFoundException($"Sport with id {sportId} not found");
             _context.Sports.Remove(sport);
             _context.SaveChanges();
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -48,8 +49,12 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
     {
         try
         {
-            Sport sport = _context.Sports.Find(sportId) ?? throw new NotFoundException();
+            Sport sport = _context.Sports.Find(sportId) ?? throw new NotFoundException($"Sport with id {sportId} not found");
             return SportMapper.EntityToModel(sport);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -74,8 +79,12 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
     {
         try
         {
-            var targetEvent = _context.Events.Find(eventId) ?? throw new NotFoundException();
+            var targetEvent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
             return ConvertSportsToModels(targetEvent.Sports);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -87,8 +96,12 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
     {
         try
         {
-            var targetTeam = _context.Teams.Find(teamId) ?? throw new NotFoundException();
+            var targetTeam = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
             return SportMapper.EntityToModel(targetTeam.Sport);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -100,14 +113,18 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
     {
         try
         {
-            var sport = _context.Sports.Find(sportId) ?? throw new NotFoundException();
+            var sport = _context.Sports.Find(sportId) ?? throw new NotFoundException($"Sport with id {sportId} not found");
 
             sport.Name = model.Name;
             sport.Description = model.Description;
 
             _context.SaveChanges();
 
-            return model;
+            return SportMapper.EntityToModel(sport);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {

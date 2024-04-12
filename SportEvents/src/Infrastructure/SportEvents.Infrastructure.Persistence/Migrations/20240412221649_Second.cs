@@ -5,7 +5,7 @@
 namespace SportEvents.Infrastructure.Persistence.Migrations;
 
 /// <inheritdoc />
-public partial class Initial : Migration
+public partial class Second : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -169,7 +169,7 @@ public partial class Initial : Migration
             {
                 table.PrimaryKey("team_pkey", x => x.id);
                 table.ForeignKey(
-                    name: "FK_teams_sports_SportId",
+                    name: "SportId",
                     column: x => x.SportId,
                     principalTable: "sports",
                     principalColumn: "id",

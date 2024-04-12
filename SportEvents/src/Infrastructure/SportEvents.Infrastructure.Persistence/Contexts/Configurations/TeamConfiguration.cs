@@ -24,6 +24,7 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
             .WithMany(s => s.Teams)
             .HasForeignKey(t => t.SportId)
             .IsRequired()
+            .HasConstraintName("SportId")
             .OnDelete(DeleteBehavior.Cascade);
         builder.ToTable("teams");
     }

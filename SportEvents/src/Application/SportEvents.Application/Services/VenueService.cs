@@ -1,5 +1,6 @@
 ﻿using SportEvents.Application.Abstractions.Persistence.Repositories;
 using SportEvents.Application.Contracts;
+using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.Models;
 
 namespace SportEvents.Application.Services;
@@ -9,6 +10,11 @@ public class VenueService(IVenueRepository venueRepository) : IVenueService
 
     public VenueModel CreateVenue(VenueModel model)
     {
+        if (model.Capacity <= 0)
+        {
+            throw new InternalServerException("Capacity must be a positive integer");
+        }
+
         return _venueRepository.CreateVenue(model);
     }
 
@@ -34,6 +40,11 @@ public class VenueService(IVenueRepository venueRepository) : IVenueService
 
     public VenueModel UpdateVenue(Guid venueId, VenueModel model)
     {
+        if (model.Capacity <= 0)
+        {
+            throw new InternalServerException("Capacity must be a positive integer");
+        }
+
         return _venueRepository.UpdateVenue(venueId, model);
     }
 }

@@ -30,9 +30,13 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
     {
         try
         {
-            Organizer organizer = _context.Organizers.Find(organizerId) ?? throw new NotFoundException();
+            Organizer organizer = _context.Organizers.Find(organizerId) ?? throw new NotFoundException($"Organizer with id {organizerId} not found");
             _context.Organizers.Remove(organizer);
             _context.SaveChanges();
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -44,8 +48,12 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
     {
         try
         {
-            Organizer organizer = _context.Organizers.Find(organizerId) ?? throw new NotFoundException();
+            Organizer organizer = _context.Organizers.Find(organizerId) ?? throw new NotFoundException($"Organizer with id {organizerId} not found");
             return OrganizerMapper.EntityToModel(organizer);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -70,7 +78,7 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
     {
         try
         {
-            var targetEventModel = _context.Events.Find(eventId) ?? throw new NotFoundException();
+            var targetEventModel = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
             return ConvertOrganizersToModels(targetEventModel.Organizers);
         }
         catch (Exception)
@@ -83,7 +91,7 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
     {
         try
         {
-            Organizer? organizer = _context.Organizers.Find(organizerId) ?? throw new NotFoundException();
+            Organizer organizer = _context.Organizers.Find(organizerId) ?? throw new NotFoundException($"Organizer with id {organizerId} not found");
             organizer.Name = model.Name;
             organizer.Description = model.Description;
             organizer.Email = model.Email;
@@ -91,7 +99,11 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
 
             _context.SaveChanges();
 
-            return model;
+            return OrganizerMapper.EntityToModel(organizer);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {

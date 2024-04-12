@@ -22,11 +22,11 @@ public class EventConfiguration : IEntityTypeConfiguration<EEvent>
             .IsRequired();
         builder.Property(e => e.StartTime)
             .HasColumnName("start_time")
-            .HasColumnType("timestamp without time zone")
+            .HasColumnType("timestamp with time zone")
             .IsRequired();
         builder.Property(e => e.EndTime)
             .HasColumnName("end_time")
-            .HasColumnType("timestamp without time zone");
+            .HasColumnType("timestamp with time zone");
         builder.ToTable("events");
     }
 }

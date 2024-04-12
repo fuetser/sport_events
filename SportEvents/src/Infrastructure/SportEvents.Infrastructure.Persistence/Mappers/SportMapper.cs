@@ -9,6 +9,7 @@ public class SportMapper
     {
         return new Sport
         {
+            Id = model.Id,
             Name = model.Name,
             Description = model.Description,
         };
@@ -18,6 +19,7 @@ public class SportMapper
     {
         return new SportModel
         {
+            Id = sport.Id,
             Name = sport.Name,
             Description = sport.Description,
         };

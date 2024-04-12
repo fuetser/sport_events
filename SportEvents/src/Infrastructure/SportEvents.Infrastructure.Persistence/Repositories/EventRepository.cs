@@ -30,9 +30,13 @@ public class EventRepository(ApplicationDbContext context) : IEventRepository
     {
         try
         {
-            EEvent eevent = _context.Events.Find(eventId) ?? throw new NotFoundException();
+            EEvent eevent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
             _context.Events.Remove(eevent);
             _context.SaveChanges();
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -44,8 +48,12 @@ public class EventRepository(ApplicationDbContext context) : IEventRepository
     {
         try
         {
-            EEvent eevent = _context.Events.Find(eventId) ?? throw new NotFoundException();
+            EEvent eevent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
             return EventMapper.EntityToModel(eevent);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -129,9 +137,7 @@ public class EventRepository(ApplicationDbContext context) : IEventRepository
     {
         try
         {
-            var eevent = _context.Events.Find(eventId);
-            if (eevent is null)
-                throw new NotFoundException();
+            var eevent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
 
             eevent.Title = model.Title;
             eevent.Description = model.Description;
@@ -139,7 +145,11 @@ public class EventRepository(ApplicationDbContext context) : IEventRepository
             eevent.EndTime = model.EndTime;
 
             _context.SaveChanges();
-            return model;
+            return EventMapper.EntityToModel(eevent);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {

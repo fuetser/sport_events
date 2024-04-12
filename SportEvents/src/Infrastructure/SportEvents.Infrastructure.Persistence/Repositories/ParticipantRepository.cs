@@ -14,7 +14,7 @@ public class ParticipantRepository(ApplicationDbContext context) : IParticipantR
     {
         try
         {
-            Participant? participant = ParticipantMapper.ModelToEntity(model);
+            Participant participant = ParticipantMapper.ModelToEntity(model);
 
             _context.Participants.Add(participant);
             _context.SaveChanges();
@@ -31,9 +31,13 @@ public class ParticipantRepository(ApplicationDbContext context) : IParticipantR
     {
         try
         {
-            Participant? participant = _context.Participants.Find(participantId) ?? throw new NotFoundException();
+            Participant participant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
             _context.Participants.Remove(participant);
             _context.SaveChanges();
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -45,8 +49,12 @@ public class ParticipantRepository(ApplicationDbContext context) : IParticipantR
     {
         try
         {
-            Participant participant = _context.Participants.Find(participantId) ?? throw new NotFoundException();
+            Participant participant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
             return ParticipantMapper.EntityToModel(participant);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -71,8 +79,12 @@ public class ParticipantRepository(ApplicationDbContext context) : IParticipantR
     {
         try
         {
-            EEvent? eevent = _context.Events.Find(eventId) ?? throw new NotFoundException();
-            return ConvertParticipantsToModels(eevent.Participants);
+            EEvent targetEvent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
+            return ConvertParticipantsToModels(targetEvent.Participants);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -84,8 +96,12 @@ public class ParticipantRepository(ApplicationDbContext context) : IParticipantR
     {
         try
         {
-            Team? targetTeam = _context.Teams.Find(teamId) ?? throw new NotFoundException();
+            Team targetTeam = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
             return ConvertParticipantsToModels(targetTeam.Participants);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -97,7 +113,7 @@ public class ParticipantRepository(ApplicationDbContext context) : IParticipantR
     {
         try
         {
-            var participant = _context.Participants.Find(participantId) ?? throw new NotFoundException();
+            var participant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
 
             participant.Name = model.Name;
             participant.DateOfBirth = model.DateOfBirth;
@@ -107,7 +123,11 @@ public class ParticipantRepository(ApplicationDbContext context) : IParticipantR
 
             _context.SaveChanges();
 
-            return model;
+            return ParticipantMapper.EntityToModel(participant);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {

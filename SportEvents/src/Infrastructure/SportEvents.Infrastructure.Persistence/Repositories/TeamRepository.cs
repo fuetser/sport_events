@@ -31,10 +31,14 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
     {
         try
         {
-            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException();
+            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
 
             _context.Teams.Remove(team);
             _context.SaveChanges();
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -46,8 +50,12 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
     {
         try
         {
-            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException();
+            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
             return TeamMapper.EntityToModel(team);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -72,9 +80,13 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
     {
         try
         {
-            var targetParticipant = _context.Participants.Find(participantId) ?? throw new NotFoundException();
+            var targetParticipant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
 
             return ConvertTeamsToModels(targetParticipant.Teams);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
@@ -86,7 +98,7 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
     {
         try
         {
-            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException();
+            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
 
             team.Name = model.Name;
             team.Description = model.Description;
@@ -94,7 +106,11 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
 
             _context.SaveChanges();
 
-            return model;
+            return TeamMapper.EntityToModel(team);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception)
         {
