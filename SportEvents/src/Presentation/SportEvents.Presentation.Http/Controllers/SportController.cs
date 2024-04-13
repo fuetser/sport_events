@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SportEvents.Application.Events.Commands;
+using SportEvents.Application.Events.Queries;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
 using SportEvents.Infrastructure.Persistence.Mappers;
@@ -12,13 +13,32 @@ public class SportController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;
 
+    [HttpGet("{sportId}")]
+    public async Task<ActionResult<SportResponse>> GetSportById(string sportId)
+    {
+        try
+        {
+            var sportModel = await _mediator.Send(new GetSportQuery { SportId = new Guid(sportId) });
+            var sportResponse = SportMapper.ModelToReponse(sportModel);
+
+            return Ok(sportResponse);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { detail = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { detail = ex.Message });
+        }
+    }
+
     [HttpPost]
-    public async Task<IActionResult> CreateSport([FromBody] SportCreateRequest request)
+    public async Task<ActionResult<SportResponse>> CreateSport([FromBody] SportCreateRequest request)
     {
         try
         {
             var sportModel = SportMapper.SportCreateToModel(request);
-
             sportModel = await _mediator.Send(new CreateSportCommand { SportCreateRequest = request });
             var sportResponse = SportMapper.ModelToReponse(sportModel);
 
@@ -26,17 +46,16 @@ public class SportController(IMediator mediator) : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
     [HttpPatch("{sportId}")]
-    public async Task<IActionResult> UpdateSport(string sportId, SportUpdateRequest request)
+    public async Task<ActionResult<SportResponse>> UpdateSport(string sportId, SportUpdateRequest request)
     {
         try
         {
             var sportModel = SportMapper.SportUpdateToModel(request);
-
             sportModel = await _mediator.Send(new UpdateSportCommand { SportId = new Guid(sportId), SportUpdateRequest = request });
             var sportResponse = SportMapper.ModelToReponse(sportModel);
 
@@ -44,16 +63,16 @@ public class SportController(IMediator mediator) : ControllerBase
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
     [HttpDelete("{sportId}")]
-    public async Task<IActionResult> DeleteSport(string sportId)
+    public async Task<ActionResult<string>> DeleteSport(string sportId)
     {
         try
         {
@@ -63,31 +82,11 @@ public class SportController(IMediator mediator) : ControllerBase
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
-
-    // [HttpGet("{sportId}")]
-    // public IActionResult GetSportById(string sportId)
-    // {
-    //    try
-    //    {
-    //        var sportModel = _sportService.GetSportById(new Guid(sportId));
-    //        var sportResponse = SportMapper.ModelToReponse(sportModel);
-
-    // return Ok(sportResponse);
-    //    }
-    //    catch (NotFoundException ex)
-    //    {
-    //        return NotFound(new { errors = new List<string> { ex.Message } });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return StatusCode(500, new { errors = new List<string> { ex.Message } });
-    //    }
-    // }
 }

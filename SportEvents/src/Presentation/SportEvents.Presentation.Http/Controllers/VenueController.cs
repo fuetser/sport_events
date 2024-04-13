@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SportEvents.Application.Events.Commands;
+using SportEvents.Application.Events.Queries;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
 using SportEvents.Infrastructure.Persistence.Mappers;
@@ -12,14 +13,32 @@ public class VenueController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;
 
+    [HttpGet("{venueId}")]
+    public async Task<ActionResult<VenueResponse>> GetVenueById(string venueId)
+    {
+        try
+        {
+            var venueModel = await _mediator.Send(new GetVenueQuery { VenueId = new Guid(venueId) });
+            var venueResponse = VenueMapper.ModelToReponse(venueModel);
+
+            return Ok(venueResponse);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { detail = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { detail = ex.Message });
+        }
+    }
+
     [HttpPost]
-    public async Task<IActionResult> CreateVenue(VenueCreateRequest request)
+    public async Task<ActionResult<VenueResponse>> CreateVenue(VenueCreateRequest request)
     {
         try
         {
             var venueModel = VenueMapper.VenueCreateToModel(request);
-
-            // venueModel = _venueService.CreateVenue(venueModel);
             venueModel = await _mediator.Send(new CreateVenueCommand { VenueCreateRequest = request });
             var venueResponse = VenueMapper.ModelToReponse(venueModel);
 
@@ -27,17 +46,16 @@ public class VenueController(IMediator mediator) : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
     [HttpPatch("{venueId}")]
-    public async Task<IActionResult> UpdateVenue(string venueId, VenueUpdateRequest request)
+    public async Task<ActionResult<VenueResponse>> UpdateVenue(string venueId, VenueUpdateRequest request)
     {
         try
         {
             var venueModel = VenueMapper.VenueUpdateToModel(request);
-
             venueModel = await _mediator.Send(new UpdateVenueCommand { VenueUpdateRequest = request });
             var venueResponse = VenueMapper.ModelToReponse(venueModel);
 
@@ -45,16 +63,16 @@ public class VenueController(IMediator mediator) : ControllerBase
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
     [HttpDelete("{venueId}")]
-    public async Task<IActionResult> DeleteVenue(string venueId)
+    public async Task<ActionResult<string>> DeleteVenue(string venueId)
     {
         try
         {
@@ -64,31 +82,11 @@ public class VenueController(IMediator mediator) : ControllerBase
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
-
-    // [HttpGet("{venueId}")]
-    // public IActionResult GetVenueById(string venueId)
-    // {
-    //    try
-    //    {
-    //        var venueModel = _venueService.GetVenueById(new Guid(venueId));
-    //        var venueResponse = VenueMapper.ModelToReponse(venueModel);
-
-    // return Ok(venueResponse);
-    //    }
-    //    catch (NotFoundException ex)
-    //    {
-    //        return NotFound(new { errors = new List<string> { ex.Message } });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return StatusCode(500, new { errors = new List<string> { ex.Message } });
-    //    }
-    // }
 }

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SportEvents.Application.Events.Commands;
+using SportEvents.Application.Events.Queries;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
 using SportEvents.Infrastructure.Persistence.Mappers;
@@ -12,13 +13,32 @@ public class OrganizerController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;
 
+    [HttpGet("{organizerId}")]
+    public async Task<ActionResult<OrganizerResponse>> GetOrganizer(string organizerId)
+    {
+        try
+        {
+            var organizerModel = await _mediator.Send(new GetOrganizerQuery { OrganizerId = new Guid(organizerId) });
+            var organizerResponse = OrganizerMapper.ModelToReponse(organizerModel);
+
+            return Ok(organizerResponse);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { detail = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { detail = ex.Message });
+        }
+    }
+
     [HttpPost]
-    public async Task<IActionResult> CreateOrganizer(OrganizerCreateRequest request)
+    public async Task<ActionResult<OrganizerResponse>> CreateOrganizer(OrganizerCreateRequest request)
     {
         try
         {
             var organizerModel = OrganizerMapper.OrganizerCreateToModel(request);
-
             organizerModel = await _mediator.Send(new CreateOrganizerCommand { OrganizerCreateRequest = request });
             var organizerResponse = OrganizerMapper.ModelToReponse(organizerModel);
 
@@ -26,52 +46,32 @@ public class OrganizerController(IMediator mediator) : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
-    // [HttpGet("{organizerId}")]
-    // public IActionResult GetOrganizer(string organizerId)
-    // {
-    //    try
-    //    {
-    //        var organizerModel = _organizerService.GetOrganizerById(new Guid(organizerId));
-    //        var organizerResponse = OrganizerMapper.ModelToReponse(organizerModel);
-
-    // return Ok(organizerResponse);
-    //    }
-    //    catch (NotFoundException ex)
-    //    {
-    //        return NotFound(new { errors = new List<string> { ex.Message } });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return StatusCode(500, new { errors = new List<string> { ex.Message } });
-    //    }
-    // }
     [HttpPatch("{organizerId}")]
-    public async Task<IActionResult> UpdateOrganizer(string organizerId, OrganizerUpdateRequest request)
+    public async Task<ActionResult<OrganizerResponse>> UpdateOrganizer(string organizerId, OrganizerUpdateRequest request)
     {
         try
         {
             var organizerModel = OrganizerMapper.OrganizerUpdateToModel(request);
-
             organizerModel = await _mediator.Send(new UpdateOrganizerCommand { OrganizerId = new Guid(organizerId), OrganizerUpdateRequest = request });
 
             return Ok(organizerModel);
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
     [HttpDelete("{organizerId}")]
-    public async Task<IActionResult> DeleteOrganizer(string organizerId)
+    public async Task<ActionResult<string>> DeleteOrganizer(string organizerId)
     {
         try
         {
@@ -81,11 +81,11 @@ public class OrganizerController(IMediator mediator) : ControllerBase
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 }
