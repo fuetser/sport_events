@@ -2,7 +2,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\SportEvents.Application.Abstractions\SportEvents.Application.Abstractions.csproj" />
-        <ProjectReference Include="..\SportEvents.Application.Contracts\SportEvents.Application.Contracts.csproj" />
+		<ProjectReference Include="..\SportEvents.Application.Contracts\SportEvents.Application.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>

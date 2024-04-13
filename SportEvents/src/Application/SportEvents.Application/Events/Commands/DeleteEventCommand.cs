@@ -1,7 +1,7 @@
 ﻿using MediatR;
 
 namespace SportEvents.Application.Events.Commands;
-internal class DeleteEventCommand : IRequest
+public class DeleteEventCommand : IRequest<string>
 {
     public Guid EventId { get; set; }
 }

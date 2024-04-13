@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         collection.AddScoped<ISportService, SportService>();
         collection.AddScoped<ITeamService, TeamService>();
         collection.AddScoped<IVenueService, VenueService>();
+        collection.AddMediatR(cf => cf.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly));
         return collection;
     }
 }
