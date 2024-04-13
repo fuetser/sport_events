@@ -9,6 +9,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="MediatR" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\..\Application\SportEvents.Application.Contracts\SportEvents.Application.Contracts.csproj" />
       <ProjectReference Include="..\..\Infrastructure\SportEvents.Infrastructure.Persistence\SportEvents.Infrastructure.Persistence.csproj" />
     </ItemGroup>

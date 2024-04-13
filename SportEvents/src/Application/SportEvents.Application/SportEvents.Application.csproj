@@ -6,7 +6,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="MediatR" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Events\Queries\" />
     </ItemGroup>
 
 </Project>
