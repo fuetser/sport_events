@@ -3,15 +3,15 @@
 namespace SportEvents.Application.Contracts;
 public interface IVenueService
 {
-    IList<VenueModel> GetVenues();
+    Task<IList<VenueModel>> GetVenues();
 
-    IList<VenueModel> GetVenuesByEventId(Guid eventId);
+    Task<IList<VenueModel>> GetVenuesByEventId(Guid eventId);
 
-    VenueModel GetVenueById(Guid venueId);
+    Task<VenueModel> GetVenueById(Guid venueId);
 
-    VenueModel CreateVenue(VenueModel model);
+    Task<VenueModel> CreateVenue(VenueModel model);
 
-    VenueModel UpdateVenue(Guid venueId, VenueModel model);
+    Task<VenueModel> UpdateVenue(Guid venueId, VenueModel model);
 
     void DeleteVenue(Guid venueId);
 }

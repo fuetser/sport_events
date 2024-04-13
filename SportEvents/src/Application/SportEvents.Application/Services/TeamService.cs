@@ -7,7 +7,7 @@ public class TeamService(ITeamRepository teamRepository) : ITeamService
 {
     private readonly ITeamRepository _teamRepository = teamRepository;
 
-    public TeamModel CreateTeam(TeamModel model)
+    public Task<TeamModel> CreateTeam(TeamModel model)
     {
         return _teamRepository.CreateTeam(model);
     }
@@ -17,22 +17,22 @@ public class TeamService(ITeamRepository teamRepository) : ITeamService
         _teamRepository.DeleteTeam(teamId);
     }
 
-    public TeamModel GetTeamById(Guid teamId)
+    public Task<TeamModel> GetTeamById(Guid teamId)
     {
         return _teamRepository.GetTeamById(teamId);
     }
 
-    public IList<TeamModel> GetTeams()
+    public Task<IList<TeamModel>> GetTeams()
     {
         return _teamRepository.GetTeams();
     }
 
-    public IList<TeamModel> GetTeamsByParticipantId(Guid participantId)
+    public Task<IList<TeamModel>> GetTeamsByParticipantId(Guid participantId)
     {
         return _teamRepository.GetTeamsByParticipantId(participantId);
     }
 
-    public TeamModel UpdateTeam(Guid teamId, TeamModel model)
+    public Task<TeamModel> UpdateTeam(Guid teamId, TeamModel model)
     {
         return _teamRepository.UpdateTeam(teamId, model);
     }

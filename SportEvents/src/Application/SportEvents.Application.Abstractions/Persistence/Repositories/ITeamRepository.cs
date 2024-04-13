@@ -3,15 +3,15 @@
 namespace SportEvents.Application.Abstractions.Persistence.Repositories;
 public interface ITeamRepository
 {
-    IList<TeamModel> GetTeams();
+    Task<IList<TeamModel>> GetTeams();
 
-    TeamModel GetTeamById(Guid teamId);
+    Task<TeamModel> GetTeamById(Guid teamId);
 
-    IList<TeamModel> GetTeamsByParticipantId(Guid participantId);
+    Task<IList<TeamModel>> GetTeamsByParticipantId(Guid participantId);
 
-    TeamModel CreateTeam(TeamModel model);
+    Task<TeamModel> CreateTeam(TeamModel model);
 
-    TeamModel UpdateTeam(Guid teamId, TeamModel model);
+    Task<TeamModel> UpdateTeam(Guid teamId, TeamModel model);
 
-    void DeleteTeam(Guid teamId);
+    Task<Guid> DeleteTeam(Guid teamId);
 }

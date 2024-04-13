@@ -3,17 +3,17 @@
 namespace SportEvents.Application.Abstractions.Persistence.Repositories;
 public interface ISportRepository
 {
-    IList<SportModel> GetSports();
+    Task<IList<SportModel>> GetSports();
 
-    SportModel GetSportById(Guid sportId);
+    Task<SportModel> GetSportById(Guid sportId);
 
-    IList<SportModel> GetSportsByEventId(Guid eventId);
+    Task<IList<SportModel>> GetSportsByEventId(Guid eventId);
 
-    SportModel GetSportByTeamId(Guid teamId);
+    Task<SportModel> GetSportByTeamId(Guid teamId);
 
-    SportModel CreateSport(SportModel model);
+    Task<SportModel> CreateSport(SportModel model);
 
-    SportModel UpdateSport(Guid sportId, SportModel model);
+    Task<SportModel> UpdateSport(Guid sportId, SportModel model);
 
-    void DeleteSport(Guid sportId);
+    Task<Guid> DeleteSport(Guid sportId);
 }

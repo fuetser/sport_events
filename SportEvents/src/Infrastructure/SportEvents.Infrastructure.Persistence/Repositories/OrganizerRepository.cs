@@ -1,4 +1,5 @@
-﻿using SportEvents.Application.Abstractions.Persistence.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using SportEvents.Application.Abstractions.Persistence.Repositories;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.Entities;
 using SportEvents.Application.Models.Models;
@@ -10,13 +11,13 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
 {
     private readonly ApplicationDbContext _context = context;
 
-    public OrganizerModel CreateOrganizer(OrganizerModel model)
+    public async Task<OrganizerModel> CreateOrganizer(OrganizerModel model)
     {
         try
         {
             Organizer organizer = OrganizerMapper.ModelToEntity(model);
             _context.Organizers.Add(organizer);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return model;
         }
@@ -26,13 +27,15 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
         }
     }
 
-    public void DeleteOrganizer(Guid organizerId)
+    public async Task<Guid> DeleteOrganizer(Guid organizerId)
     {
         try
         {
-            Organizer organizer = _context.Organizers.Find(organizerId) ?? throw new NotFoundException($"Organizer with id {organizerId} not found");
+            Organizer organizer = await _context.Organizers.FindAsync(organizerId) ?? throw new NotFoundException($"Organizer with id {organizerId} not found");
             _context.Organizers.Remove(organizer);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            return organizerId;
         }
         catch (NotFoundException)
         {
@@ -44,11 +47,11 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
         }
     }
 
-    public OrganizerModel GetOrganizerById(Guid organizerId)
+    public async Task<OrganizerModel> GetOrganizerById(Guid organizerId)
     {
         try
         {
-            Organizer organizer = _context.Organizers.Find(organizerId) ?? throw new NotFoundException($"Organizer with id {organizerId} not found");
+            Organizer organizer = await _context.Organizers.FindAsync(organizerId) ?? throw new NotFoundException($"Organizer with id {organizerId} not found");
             return OrganizerMapper.EntityToModel(organizer);
         }
         catch (NotFoundException)
@@ -61,11 +64,11 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
         }
     }
 
-    public IList<OrganizerModel> GetOrganizers()
+    public async Task<IList<OrganizerModel>> GetOrganizers()
     {
         try
         {
-            var organizers = _context.Organizers.ToList();
+            var organizers = await _context.Organizers.ToListAsync();
             return ConvertOrganizersToModels(organizers);
         }
         catch (Exception)
@@ -74,11 +77,11 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
         }
     }
 
-    public IList<OrganizerModel> GetOrganizersByEventId(Guid eventId)
+    public async Task<IList<OrganizerModel>> GetOrganizersByEventId(Guid eventId)
     {
         try
         {
-            var targetEventModel = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
+            var targetEventModel = await _context.Events.FindAsync(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
             return ConvertOrganizersToModels(targetEventModel.Organizers);
         }
         catch (Exception)
@@ -87,17 +90,17 @@ public class OrganizerRepository(ApplicationDbContext context) : IOrganizerRepos
         }
     }
 
-    public OrganizerModel UpdateOrganizer(Guid organizerId, OrganizerModel model)
+    public async Task<OrganizerModel> UpdateOrganizer(Guid organizerId, OrganizerModel model)
     {
         try
         {
-            Organizer organizer = _context.Organizers.Find(organizerId) ?? throw new NotFoundException($"Organizer with id {organizerId} not found");
+            Organizer organizer = await _context.Organizers.FindAsync(organizerId) ?? throw new NotFoundException($"Organizer with id {organizerId} not found");
             organizer.Name = model.Name;
             organizer.Description = model.Description;
             organizer.Email = model.Email;
             organizer.Phone = model.Phone;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return OrganizerMapper.EntityToModel(organizer);
         }

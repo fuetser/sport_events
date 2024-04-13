@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SportEvents.Application.Contracts;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using SportEvents.Application.Events.Commands;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
 using SportEvents.Infrastructure.Persistence.Mappers;
@@ -7,33 +8,19 @@ using SportEvents.Infrastructure.Persistence.Mappers;
 namespace SportEvents.Presentation.Http.Controllers;
 [ApiController]
 [Route("/api/v1/venues")]
-public class VenueController(IVenueService venueService) : ControllerBase
+public class VenueController(IMediator mediator) : ControllerBase
 {
-    private readonly IVenueService _venueService = venueService;
-
-    [HttpGet]
-    public IActionResult GetVenues()
-    {
-        try
-        {
-            var venueModels = _venueService.GetVenues();
-            var venueResponses = venueModels.Select(v => VenueMapper.ModelToReponse(v)).ToList();
-
-            return Ok(venueResponses);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
+    private readonly IMediator _mediator = mediator;
 
     [HttpPost]
-    public IActionResult CreateVenue(VenueCreateRequest request)
+    public async Task<IActionResult> CreateVenue(VenueCreateRequest request)
     {
         try
         {
             var venueModel = VenueMapper.VenueCreateToModel(request);
-            venueModel = _venueService.CreateVenue(venueModel);
+
+            // venueModel = _venueService.CreateVenue(venueModel);
+            venueModel = await _mediator.Send(new CreateVenueCommand { VenueCreateRequest = request });
             var venueResponse = VenueMapper.ModelToReponse(venueModel);
 
             return Ok(venueResponse);
@@ -45,12 +32,13 @@ public class VenueController(IVenueService venueService) : ControllerBase
     }
 
     [HttpPatch("{venueId}")]
-    public IActionResult UpdateVenue(string venueId, VenueUpdateRequest request)
+    public async Task<IActionResult> UpdateVenue(string venueId, VenueUpdateRequest request)
     {
         try
         {
             var venueModel = VenueMapper.VenueUpdateToModel(request);
-            venueModel = _venueService.UpdateVenue(new Guid(venueId), venueModel);
+
+            venueModel = await _mediator.Send(new UpdateVenueCommand { VenueUpdateRequest = request });
             var venueResponse = VenueMapper.ModelToReponse(venueModel);
 
             return Ok(venueResponse);
@@ -66,11 +54,11 @@ public class VenueController(IVenueService venueService) : ControllerBase
     }
 
     [HttpDelete("{venueId}")]
-    public IActionResult DeleteVenue(string venueId)
+    public async Task<IActionResult> DeleteVenue(string venueId)
     {
         try
         {
-            _venueService.DeleteVenue(new Guid(venueId));
+            await _mediator.Send(new DeleteVenueCommand { VenueId = new Guid(venueId) });
 
             return Ok(venueId);
         }
@@ -84,43 +72,23 @@ public class VenueController(IVenueService venueService) : ControllerBase
         }
     }
 
-    [HttpGet("{venueId}")]
-    public IActionResult GetVenueById(string venueId)
-    {
-        try
-        {
-            var venueModel = _venueService.GetVenueById(new Guid(venueId));
-            var venueResponse = VenueMapper.ModelToReponse(venueModel);
+    // [HttpGet("{venueId}")]
+    // public IActionResult GetVenueById(string venueId)
+    // {
+    //    try
+    //    {
+    //        var venueModel = _venueService.GetVenueById(new Guid(venueId));
+    //        var venueResponse = VenueMapper.ModelToReponse(venueModel);
 
-            return Ok(venueResponse);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("event/{eventId}")]
-    public IActionResult GetVenuesByEventId(string eventId)
-    {
-        try
-        {
-            var venueModels = _venueService.GetVenuesByEventId(new Guid(eventId));
-            var venueResponses = venueModels.Select(v => VenueMapper.ModelToReponse(v)).ToList();
-
-            return Ok(venueResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
+    // return Ok(venueResponse);
+    //    }
+    //    catch (NotFoundException ex)
+    //    {
+    //        return NotFound(new { errors = new List<string> { ex.Message } });
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return StatusCode(500, new { errors = new List<string> { ex.Message } });
+    //    }
+    // }
 }

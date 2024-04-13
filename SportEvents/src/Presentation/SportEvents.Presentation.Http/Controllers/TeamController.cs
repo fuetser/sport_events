@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SportEvents.Application.Contracts;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using SportEvents.Application.Events.Commands;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
 using SportEvents.Infrastructure.Persistence.Mappers;
@@ -7,17 +8,18 @@ using SportEvents.Infrastructure.Persistence.Mappers;
 namespace SportEvents.Presentation.Http.Controllers;
 [ApiController]
 [Route("/api/v1/teams")]
-public class TeamController(ITeamService teamService) : ControllerBase
+public class TeamController(IMediator mediator) : ControllerBase
 {
-    private readonly ITeamService _teamService = teamService;
+    private readonly IMediator _mediator = mediator;
 
     [HttpPost]
-    public IActionResult CreateTeam(TeamCreateRequest request)
+    public async Task<IActionResult> CreateTeam(TeamCreateRequest request)
     {
         try
         {
             var teamModel = TeamMapper.TeamCreateToModel(request);
-            teamModel = _teamService.CreateTeam(teamModel);
+
+            teamModel = await _mediator.Send(new CreateTeamCommand { TeamCreateRequest = request });
             var teamResponse = TeamMapper.ModelToReponse(teamModel);
 
             return Ok(teamResponse);
@@ -29,12 +31,13 @@ public class TeamController(ITeamService teamService) : ControllerBase
     }
 
     [HttpPatch("{teamId}")]
-    public IActionResult UpdateTeam(string teamId, TeamUpdateRequest request)
+    public async Task<IActionResult> UpdateTeam(string teamId, TeamUpdateRequest request)
     {
         try
         {
             var teamModel = TeamMapper.TeamUpdateToModel(request);
-            teamModel = _teamService.UpdateTeam(new Guid(teamId), teamModel);
+
+            teamModel = await _mediator.Send(new UpdateTeamCommand { TeamId = new Guid(teamId), TeamUpdateRequest = request });
             var teamResponse = TeamMapper.ModelToReponse(teamModel);
 
             return Ok(teamResponse);
@@ -49,68 +52,31 @@ public class TeamController(ITeamService teamService) : ControllerBase
         }
     }
 
-    [HttpGet]
-    public IActionResult GetTeams()
-    {
-        try
-        {
-            var teamModels = _teamService.GetTeams();
-            var teamResponses = teamModels.Select(t => TeamMapper.ModelToReponse(t)).ToList();
+    // [HttpGet("{teamId}")]
+    // public IActionResult GetTeamById(string teamId)
+    // {
+    //    try
+    //    {
+    //        var teamModel = _teamService.GetTeamById(new Guid(teamId));
+    //        var teamResponse = TeamMapper.ModelToReponse(teamModel);
 
-            return Ok(teamResponses);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("{teamId}")]
-    public IActionResult GetTeamById(string teamId)
-    {
-        try
-        {
-            var teamModel = _teamService.GetTeamById(new Guid(teamId));
-            var teamResponse = TeamMapper.ModelToReponse(teamModel);
-
-            return Ok(teamResponse);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("participant/{participantId}")]
-    public IActionResult GetTeamByParticipantId(string participantId)
-    {
-        try
-        {
-            var teamModels = _teamService.GetTeamsByParticipantId(new Guid(participantId));
-            var teamResponses = teamModels.Select(t => TeamMapper.ModelToReponse(t)).ToList();
-
-            return Ok(teamResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
+    // return Ok(teamResponse);
+    //    }
+    //    catch (NotFoundException ex)
+    //    {
+    //        return NotFound(new { errors = new List<string> { ex.Message } });
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return StatusCode(500, new { errors = new List<string> { ex.Message } });
+    //    }
+    // }
     [HttpDelete("{teamId}")]
-    public IActionResult DeleteTeam(string teamId)
+    public async Task<IActionResult> DeleteTeam(string teamId)
     {
         try
         {
-            _teamService.DeleteTeam(new Guid(teamId));
+            await _mediator.Send(new DeleteTeamCommand { TeamId = new Guid(teamId) });
 
             return Ok(teamId);
         }

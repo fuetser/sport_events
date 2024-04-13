@@ -7,7 +7,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
 {
     private readonly IParticipantRepository _participantRepository = participantRepository;
 
-    public ParticipantModel CreateParticipant(ParticipantModel model)
+    public Task<ParticipantModel> CreateParticipant(ParticipantModel model)
     {
         return _participantRepository.CreateParticipant(model);
     }
@@ -17,27 +17,27 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
         _participantRepository.DeleteParticipant(participantId);
     }
 
-    public ParticipantModel GetParticipantById(Guid participantId)
+    public Task<ParticipantModel> GetParticipantById(Guid participantId)
     {
         return _participantRepository.GetParticipantById(participantId);
     }
 
-    public IList<ParticipantModel> GetParticipants()
+    public Task<IList<ParticipantModel>> GetParticipants()
     {
         return _participantRepository.GetParticipants();
     }
 
-    public IList<ParticipantModel> GetParticipantsByEventId(Guid eventId)
+    public Task<IList<ParticipantModel>> GetParticipantsByEventId(Guid eventId)
     {
         return _participantRepository.GetParticipantsByEventId(eventId);
     }
 
-    public IList<ParticipantModel> GetParticipantsByTeamId(Guid teamId)
+    public Task<IList<ParticipantModel>> GetParticipantsByTeamId(Guid teamId)
     {
         return _participantRepository.GetParticipantsByTeamId(teamId);
     }
 
-    public ParticipantModel UpdateParticipant(Guid participantId, ParticipantModel model)
+    public Task<ParticipantModel> UpdateParticipant(Guid participantId, ParticipantModel model)
     {
         return _participantRepository.UpdateParticipant(participantId, model);
     }

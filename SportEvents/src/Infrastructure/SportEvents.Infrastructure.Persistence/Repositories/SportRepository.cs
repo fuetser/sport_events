@@ -1,4 +1,5 @@
-﻿using SportEvents.Application.Abstractions.Persistence.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using SportEvents.Application.Abstractions.Persistence.Repositories;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.Entities;
 using SportEvents.Application.Models.Models;
@@ -10,14 +11,14 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
 {
     private readonly ApplicationDbContext _context = context;
 
-    public SportModel CreateSport(SportModel model)
+    public async Task<SportModel> CreateSport(SportModel model)
     {
         try
         {
             Sport sport = SportMapper.ModelToEntity(model);
 
             _context.Sports.Add(sport);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return model;
         }
@@ -27,13 +28,15 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
         }
     }
 
-    public void DeleteSport(Guid sportId)
+    public async Task<Guid> DeleteSport(Guid sportId)
     {
         try
         {
-            Sport sport = _context.Sports.Find(sportId) ?? throw new NotFoundException($"Sport with id {sportId} not found");
+            Sport sport = await _context.Sports.FindAsync(sportId) ?? throw new NotFoundException($"Sport with id {sportId} not found");
             _context.Sports.Remove(sport);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            return sportId;
         }
         catch (NotFoundException)
         {
@@ -45,11 +48,11 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
         }
     }
 
-    public SportModel GetSportById(Guid sportId)
+    public async Task<SportModel> GetSportById(Guid sportId)
     {
         try
         {
-            Sport sport = _context.Sports.Find(sportId) ?? throw new NotFoundException($"Sport with id {sportId} not found");
+            Sport sport = await _context.Sports.FindAsync(sportId) ?? throw new NotFoundException($"Sport with id {sportId} not found");
             return SportMapper.EntityToModel(sport);
         }
         catch (NotFoundException)
@@ -62,11 +65,11 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
         }
     }
 
-    public IList<SportModel> GetSports()
+    public async Task<IList<SportModel>> GetSports()
     {
         try
         {
-            var sportModels = _context.Sports.ToList();
+            var sportModels = await _context.Sports.ToListAsync();
             return ConvertSportsToModels(sportModels);
         }
         catch
@@ -75,11 +78,11 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
         }
     }
 
-    public IList<SportModel> GetSportsByEventId(Guid eventId)
+    public async Task<IList<SportModel>> GetSportsByEventId(Guid eventId)
     {
         try
         {
-            var targetEvent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
+            var targetEvent = await _context.Events.FindAsync(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
             return ConvertSportsToModels(targetEvent.Sports);
         }
         catch (NotFoundException)
@@ -92,11 +95,11 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
         }
     }
 
-    public SportModel GetSportByTeamId(Guid teamId)
+    public async Task<SportModel> GetSportByTeamId(Guid teamId)
     {
         try
         {
-            var targetTeam = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
+            var targetTeam = await _context.Teams.FindAsync(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
             return SportMapper.EntityToModel(targetTeam.Sport);
         }
         catch (NotFoundException)
@@ -109,16 +112,16 @@ public class SportRepository(ApplicationDbContext context) : ISportRepository
         }
     }
 
-    public SportModel UpdateSport(Guid sportId, SportModel model)
+    public async Task<SportModel> UpdateSport(Guid sportId, SportModel model)
     {
         try
         {
-            var sport = _context.Sports.Find(sportId) ?? throw new NotFoundException($"Sport with id {sportId} not found");
+            var sport = await _context.Sports.FindAsync(sportId) ?? throw new NotFoundException($"Sport with id {sportId} not found");
 
             sport.Name = model.Name;
             sport.Description = model.Description;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return SportMapper.EntityToModel(sport);
         }

@@ -1,4 +1,5 @@
-﻿using SportEvents.Application.Abstractions.Persistence.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using SportEvents.Application.Abstractions.Persistence.Repositories;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.Entities;
 using SportEvents.Application.Models.Models;
@@ -10,14 +11,14 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
 {
     private readonly ApplicationDbContext _context = context;
 
-    public VenueModel CreateVenue(VenueModel model)
+    public async Task<VenueModel> CreateVenue(VenueModel model)
     {
         try
         {
             Venue venue = VenueMapper.ModelToEntity(model);
 
             _context.Venues.Add(venue);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return model;
         }
@@ -27,14 +28,16 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
         }
     }
 
-    public void DeleteVenue(Guid venueId)
+    public async Task<Guid> DeleteVenue(Guid venueId)
     {
         try
         {
-            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
+            Venue venue = await _context.Venues.FindAsync(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
 
             _context.Venues.Remove(venue);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            return venueId;
         }
         catch (NotFoundException)
         {
@@ -46,11 +49,11 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
         }
     }
 
-    public VenueModel GetVenueById(Guid venueId)
+    public async Task<VenueModel> GetVenueById(Guid venueId)
     {
         try
         {
-            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
+            Venue venue = await _context.Venues.FindAsync(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
             return VenueMapper.EntityToModel(venue);
         }
         catch (NotFoundException)
@@ -63,11 +66,11 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
         }
     }
 
-    public IList<VenueModel> GetVenues()
+    public async Task<IList<VenueModel>> GetVenues()
     {
         try
         {
-            var venueModels = _context.Venues.ToList();
+            var venueModels = await _context.Venues.ToListAsync();
             return ConvertVenuesToModels(venueModels);
         }
         catch (Exception)
@@ -76,11 +79,11 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
         }
     }
 
-    public IList<VenueModel> GetVenuesByEventId(Guid eventId)
+    public async Task<IList<VenueModel>> GetVenuesByEventId(Guid eventId)
     {
         try
         {
-            var targetEvent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
+            var targetEvent = await _context.Events.FindAsync(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
             return ConvertVenuesToModels(targetEvent.Venues);
         }
         catch (NotFoundException)
@@ -93,18 +96,18 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
         }
     }
 
-    public VenueModel UpdateVenue(Guid venueId, VenueModel model)
+    public async Task<VenueModel> UpdateVenue(Guid venueId, VenueModel model)
     {
         try
         {
-            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
+            Venue venue = await _context.Venues.FindAsync(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
 
             venue.Name = model.Name;
             venue.Description = model.Description;
             venue.Address = model.Address;
             venue.Capacity = model.Capacity;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return VenueMapper.EntityToModel(venue);
         }

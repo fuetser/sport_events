@@ -27,13 +27,15 @@ public class EventRepository(ApplicationDbContext context) : IEventRepository
         }
     }
 
-    public async void DeleteEvent(Guid eventId)
+    public async Task<Guid> DeleteEvent(Guid eventId)
     {
         try
         {
-            EEvent eevent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
+            EEvent eevent = await _context.Events.FindAsync(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
             _context.Events.Remove(eevent);
             await _context.SaveChangesAsync();
+
+            return eventId;
         }
         catch (NotFoundException)
         {

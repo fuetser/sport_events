@@ -19,5 +19,5 @@ public interface IEventRepository
 
     Task<EventModel> UpdateEvent(Guid eventId, EventModel model);
 
-    void DeleteEvent(Guid eventId);
+    Task<Guid> DeleteEvent(Guid eventId);
 }

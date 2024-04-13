@@ -3,17 +3,17 @@
 namespace SportEvents.Application.Contracts;
 public interface IParticipantService
 {
-    IList<ParticipantModel> GetParticipants();
+    Task<IList<ParticipantModel>> GetParticipants();
 
-    IList<ParticipantModel> GetParticipantsByEventId(Guid eventId);
+    Task<IList<ParticipantModel>> GetParticipantsByEventId(Guid eventId);
 
-    IList<ParticipantModel> GetParticipantsByTeamId(Guid teamId);
+    Task<IList<ParticipantModel>> GetParticipantsByTeamId(Guid teamId);
 
-    ParticipantModel GetParticipantById(Guid participantId);
+    Task<ParticipantModel> GetParticipantById(Guid participantId);
 
-    ParticipantModel CreateParticipant(ParticipantModel model);
+    Task<ParticipantModel> CreateParticipant(ParticipantModel model);
 
-    ParticipantModel UpdateParticipant(Guid participantId, ParticipantModel model);
+    Task<ParticipantModel> UpdateParticipant(Guid participantId, ParticipantModel model);
 
     void DeleteParticipant(Guid participantId);
 }

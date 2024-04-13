@@ -4,7 +4,7 @@ using SportEvents.Application.Models.Models;
 
 namespace SportEvents.Application.Events.Commands;
 
-public class CreateParticipantCommand : IRequest<PatricipantModel>
+public class CreateParticipantCommand : IRequest<ParticipantModel>
 {
     public ParticipantCreateRequest ParticipantCreateRequest { get; set; } = null!;
 }

@@ -3,15 +3,15 @@
 namespace SportEvents.Application.Abstractions.Persistence.Repositories;
 public interface IOrganizerRepository
 {
-    IList<OrganizerModel> GetOrganizers();
+    Task<IList<OrganizerModel>> GetOrganizers();
 
-    IList<OrganizerModel> GetOrganizersByEventId(Guid eventId);
+    Task<IList<OrganizerModel>> GetOrganizersByEventId(Guid eventId);
 
-    OrganizerModel GetOrganizerById(Guid organizerId);
+    Task<OrganizerModel> GetOrganizerById(Guid organizerId);
 
-    OrganizerModel CreateOrganizer(OrganizerModel model);
+    Task<OrganizerModel> CreateOrganizer(OrganizerModel model);
 
-    OrganizerModel UpdateOrganizer(Guid organizerId, OrganizerModel model);
+    Task<OrganizerModel> UpdateOrganizer(Guid organizerId, OrganizerModel model);
 
-    void DeleteOrganizer(Guid organizerId);
+    Task<Guid> DeleteOrganizer(Guid organizerId);
 }

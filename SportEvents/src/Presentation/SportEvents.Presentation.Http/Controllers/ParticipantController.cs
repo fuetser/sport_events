@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SportEvents.Application.Contracts;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using SportEvents.Application.Events.Commands;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
 using SportEvents.Infrastructure.Persistence.Mappers;
@@ -7,17 +8,18 @@ using SportEvents.Infrastructure.Persistence.Mappers;
 namespace SportEvents.Presentation.Http.Controllers;
 [ApiController]
 [Route("/api/v1/participants")]
-public class ParticipantController(IParticipantService participantService) : ControllerBase
+public class ParticipantController(IMediator mediator) : ControllerBase
 {
-    private readonly IParticipantService _participantService = participantService;
+    private readonly IMediator _mediator = mediator;
 
     [HttpPost]
-    public IActionResult CreateParticipant([FromBody] ParticipantCreateRequest request)
+    public async Task<IActionResult> CreateParticipant([FromBody] ParticipantCreateRequest request)
     {
         try
         {
             var participantModel = ParticipantMapper.ParticipantCreateToModel(request);
-            participantModel = _participantService.CreateParticipant(participantModel);
+
+            participantModel = await _mediator.Send(new CreateParticipantCommand { ParticipantCreateRequest = request });
             var participantResponse = ParticipantMapper.ModelToReponse(participantModel);
 
             return Ok(participantResponse);
@@ -28,29 +30,14 @@ public class ParticipantController(IParticipantService participantService) : Con
         }
     }
 
-    [HttpGet]
-    public IActionResult GetParticipants()
-    {
-        try
-        {
-            var participantModels = _participantService.GetParticipants();
-            var participantResponses = participantModels.Select(p => ParticipantMapper.ModelToReponse(p)).ToArray();
-
-            return Ok(participantResponses);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
     [HttpPatch("{participantId}")]
-    public IActionResult UpdateParticipant(string participantId, ParticipantUpdateRequest request)
+    public async Task<IActionResult> UpdateParticipant(string participantId, ParticipantUpdateRequest request)
     {
         try
         {
             var participantModel = ParticipantMapper.ParticipantUpdateToModel(request);
-            participantModel = _participantService.UpdateParticipant(new Guid(participantId), participantModel);
+
+            participantModel = await _mediator.Send(new UpdateParticipantCommand { ParticipantId = new Guid(participantId), ParticipantUpdateRequest = request });
             var participantResponse = ParticipantMapper.ModelToReponse(participantModel);
 
             return Ok(participantResponse);
@@ -66,11 +53,11 @@ public class ParticipantController(IParticipantService participantService) : Con
     }
 
     [HttpDelete("{participantId}")]
-    public IActionResult DeleteParticipant(string participantId)
+    public async Task<IActionResult> DeleteParticipant(string participantId)
     {
         try
         {
-            _participantService.DeleteParticipant(new Guid(participantId));
+            await _mediator.Send(new DeleteParticipantCommand { ParticipantId = new Guid(participantId) });
 
             return Ok(participantId);
         }
@@ -84,63 +71,23 @@ public class ParticipantController(IParticipantService participantService) : Con
         }
     }
 
-    [HttpGet("event/{eventId}")]
-    public IActionResult GetParticipantsByEventId(string eventId)
-    {
-        try
-        {
-            var participantModels = _participantService.GetParticipantsByEventId(new Guid(eventId));
-            var participantResponses = participantModels.Select(p => ParticipantMapper.ModelToReponse(p)).ToArray();
+    // [HttpGet("{participantId}")]
+    // public IActionResult GetParticipantById(string participantId)
+    // {
+    //    try
+    //    {
+    //        var participantModel = _participantService.GetParticipantById(new Guid(participantId));
+    //        var participantResponse = ParticipantMapper.ModelToReponse(participantModel);
 
-            return Ok(participantResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("team/{eventId}")]
-    public IActionResult GetParticipantsByTeamId(string teamId)
-    {
-        try
-        {
-            var participantModels = _participantService.GetParticipantsByTeamId(new Guid(teamId));
-            var participantResponses = participantModels.Select(p => ParticipantMapper.ModelToReponse(p)).ToArray();
-
-            return Ok(participantResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("{participantId}")]
-    public IActionResult GetParticipantById(string participantId)
-    {
-        try
-        {
-            var participantModel = _participantService.GetParticipantById(new Guid(participantId));
-            var participantResponse = ParticipantMapper.ModelToReponse(participantModel);
-
-            return Ok(participantResponse);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
+    // return Ok(participantResponse);
+    //    }
+    //    catch (NotFoundException ex)
+    //    {
+    //        return NotFound(new { errors = new List<string> { ex.Message } });
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return StatusCode(500, new { errors = new List<string> { ex.Message } });
+    //    }
+    // }
 }

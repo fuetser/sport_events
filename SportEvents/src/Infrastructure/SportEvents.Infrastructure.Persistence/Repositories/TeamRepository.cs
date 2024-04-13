@@ -1,4 +1,5 @@
-﻿using SportEvents.Application.Abstractions.Persistence.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using SportEvents.Application.Abstractions.Persistence.Repositories;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.Entities;
 using SportEvents.Application.Models.Models;
@@ -10,14 +11,14 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
 {
     private readonly ApplicationDbContext _context = context;
 
-    public TeamModel CreateTeam(TeamModel model)
+    public async Task<TeamModel> CreateTeam(TeamModel model)
     {
         try
         {
             Team team = TeamMapper.ModelToEntity(model);
 
             _context.Teams.Add(team);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return model;
         }
@@ -27,14 +28,16 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
         }
     }
 
-    public void DeleteTeam(Guid teamId)
+    public async Task<Guid> DeleteTeam(Guid teamId)
     {
         try
         {
-            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
+            Team team = await _context.Teams.FindAsync(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
 
             _context.Teams.Remove(team);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            return teamId;
         }
         catch (NotFoundException)
         {
@@ -46,11 +49,11 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
         }
     }
 
-    public TeamModel GetTeamById(Guid teamId)
+    public async Task<TeamModel> GetTeamById(Guid teamId)
     {
         try
         {
-            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
+            Team team = await _context.Teams.FindAsync(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
             return TeamMapper.EntityToModel(team);
         }
         catch (NotFoundException)
@@ -63,11 +66,11 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
         }
     }
 
-    public IList<TeamModel> GetTeams()
+    public async Task<IList<TeamModel>> GetTeams()
     {
         try
         {
-            var teamModels = _context.Teams.ToList();
+            var teamModels = await _context.Teams.ToListAsync();
             return ConvertTeamsToModels(teamModels);
         }
         catch (Exception)
@@ -76,11 +79,11 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
         }
     }
 
-    public IList<TeamModel> GetTeamsByParticipantId(Guid participantId)
+    public async Task<IList<TeamModel>> GetTeamsByParticipantId(Guid participantId)
     {
         try
         {
-            var targetParticipant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
+            var targetParticipant = await _context.Participants.FindAsync(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
 
             return ConvertTeamsToModels(targetParticipant.Teams);
         }
@@ -94,17 +97,17 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
         }
     }
 
-    public TeamModel UpdateTeam(Guid teamId, TeamModel model)
+    public async Task<TeamModel> UpdateTeam(Guid teamId, TeamModel model)
     {
         try
         {
-            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
+            Team team = await _context.Teams.FindAsync(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
 
             team.Name = model.Name;
             team.Description = model.Description;
             team.SportId = model.SportId;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return TeamMapper.EntityToModel(team);
         }

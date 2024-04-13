@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SportEvents.Application.Contracts;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using SportEvents.Application.Events.Commands;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
 using SportEvents.Infrastructure.Persistence.Mappers;
@@ -7,33 +8,18 @@ using SportEvents.Infrastructure.Persistence.Mappers;
 namespace SportEvents.Presentation.Http.Controllers;
 [ApiController]
 [Route("/api/v1/sports")]
-public class SportController(ISportService sportService) : ControllerBase
+public class SportController(IMediator mediator) : ControllerBase
 {
-    private readonly ISportService _sportService = sportService;
-
-    [HttpGet]
-    public IActionResult GetSports()
-    {
-        try
-        {
-            var sportModels = _sportService.GetSports();
-            var sportResponses = sportModels.Select(s => SportMapper.ModelToReponse(s)).ToList();
-
-            return Ok(sportResponses);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
+    private readonly IMediator _mediator = mediator;
 
     [HttpPost]
-    public IActionResult CreateSport([FromBody] SportCreateRequest request)
+    public async Task<IActionResult> CreateSport([FromBody] SportCreateRequest request)
     {
         try
         {
             var sportModel = SportMapper.SportCreateToModel(request);
-            sportModel = _sportService.CreateSport(sportModel);
+
+            sportModel = await _mediator.Send(new CreateSportCommand { SportCreateRequest = request });
             var sportResponse = SportMapper.ModelToReponse(sportModel);
 
             return Ok(sportResponse);
@@ -45,12 +31,13 @@ public class SportController(ISportService sportService) : ControllerBase
     }
 
     [HttpPatch("{sportId}")]
-    public IActionResult UpdateSport(string sportId, SportUpdateRequest request)
+    public async Task<IActionResult> UpdateSport(string sportId, SportUpdateRequest request)
     {
         try
         {
             var sportModel = SportMapper.SportUpdateToModel(request);
-            sportModel = _sportService.UpdateSport(new Guid(sportId), sportModel);
+
+            sportModel = await _mediator.Send(new UpdateSportCommand { SportId = new Guid(sportId), SportUpdateRequest = request });
             var sportResponse = SportMapper.ModelToReponse(sportModel);
 
             return Ok(sportResponse);
@@ -66,11 +53,11 @@ public class SportController(ISportService sportService) : ControllerBase
     }
 
     [HttpDelete("{sportId}")]
-    public IActionResult DeleteSport(string sportId)
+    public async Task<IActionResult> DeleteSport(string sportId)
     {
         try
         {
-            _sportService.DeleteSport(new Guid(sportId));
+            await _mediator.Send(new DeleteSportCommand { SportId = new Guid(sportId) });
 
             return Ok(sportId);
         }
@@ -84,63 +71,23 @@ public class SportController(ISportService sportService) : ControllerBase
         }
     }
 
-    [HttpGet("{sportId}")]
-    public IActionResult GetSportById(string sportId)
-    {
-        try
-        {
-            var sportModel = _sportService.GetSportById(new Guid(sportId));
-            var sportResponse = SportMapper.ModelToReponse(sportModel);
+    // [HttpGet("{sportId}")]
+    // public IActionResult GetSportById(string sportId)
+    // {
+    //    try
+    //    {
+    //        var sportModel = _sportService.GetSportById(new Guid(sportId));
+    //        var sportResponse = SportMapper.ModelToReponse(sportModel);
 
-            return Ok(sportResponse);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("event/{eventId}")]
-    public IActionResult GetSportsByEventId(string eventId)
-    {
-        try
-        {
-            var sportModels = _sportService.GetSportsByEventId(new Guid(eventId));
-            var sportResponses = sportModels.Select(s => SportMapper.ModelToReponse(s)).ToArray();
-
-            return Ok(sportResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("team/{teamId}")]
-    public IActionResult GetSportByTeamId(string teamId)
-    {
-        try
-        {
-            var sportModel = _sportService.GetSportByTeamId(new Guid(teamId));
-            var sportResponse = SportMapper.ModelToReponse(sportModel);
-
-            return Ok(sportResponse);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
+    // return Ok(sportResponse);
+    //    }
+    //    catch (NotFoundException ex)
+    //    {
+    //        return NotFound(new { errors = new List<string> { ex.Message } });
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return StatusCode(500, new { errors = new List<string> { ex.Message } });
+    //    }
+    // }
 }

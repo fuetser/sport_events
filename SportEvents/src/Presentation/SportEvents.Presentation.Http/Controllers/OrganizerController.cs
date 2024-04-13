@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SportEvents.Application.Contracts;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using SportEvents.Application.Events.Commands;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
 using SportEvents.Infrastructure.Persistence.Mappers;
@@ -7,17 +8,18 @@ using SportEvents.Infrastructure.Persistence.Mappers;
 namespace SportEvents.Presentation.Http.Controllers;
 [ApiController]
 [Route("/api/v1/organizers")]
-public class OrganizerController(IOrganizerService organizerService) : ControllerBase
+public class OrganizerController(IMediator mediator) : ControllerBase
 {
-    private readonly IOrganizerService _organizerService = organizerService;
+    private readonly IMediator _mediator = mediator;
 
     [HttpPost]
-    public IActionResult CreateOrganizer(OrganizerCreateRequest request)
+    public async Task<IActionResult> CreateOrganizer(OrganizerCreateRequest request)
     {
         try
         {
             var organizerModel = OrganizerMapper.OrganizerCreateToModel(request);
-            organizerModel = _organizerService.CreateOrganizer(organizerModel);
+
+            organizerModel = await _mediator.Send(new CreateOrganizerCommand { OrganizerCreateRequest = request });
             var organizerResponse = OrganizerMapper.ModelToReponse(organizerModel);
 
             return Ok(organizerResponse);
@@ -28,49 +30,33 @@ public class OrganizerController(IOrganizerService organizerService) : Controlle
         }
     }
 
-    [HttpGet]
-    public IActionResult GetOrganizers()
-    {
-        try
-        {
-            var organizerModels = _organizerService.GetOrganizers();
-            var organizerResponses = organizerModels.Select(m => OrganizerMapper.ModelToReponse(m)).ToArray();
+    // [HttpGet("{organizerId}")]
+    // public IActionResult GetOrganizer(string organizerId)
+    // {
+    //    try
+    //    {
+    //        var organizerModel = _organizerService.GetOrganizerById(new Guid(organizerId));
+    //        var organizerResponse = OrganizerMapper.ModelToReponse(organizerModel);
 
-            return Ok(organizerResponses);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("{organizerId}")]
-    public IActionResult GetOrganizer(string organizerId)
-    {
-        try
-        {
-            var organizerModel = _organizerService.GetOrganizerById(new Guid(organizerId));
-            var organizerResponse = OrganizerMapper.ModelToReponse(organizerModel);
-
-            return Ok(organizerResponse);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
+    // return Ok(organizerResponse);
+    //    }
+    //    catch (NotFoundException ex)
+    //    {
+    //        return NotFound(new { errors = new List<string> { ex.Message } });
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return StatusCode(500, new { errors = new List<string> { ex.Message } });
+    //    }
+    // }
     [HttpPatch("{organizerId}")]
-    public IActionResult UpdateOrganizer(string organizerId, OrganizerUpdateRequest request)
+    public async Task<IActionResult> UpdateOrganizer(string organizerId, OrganizerUpdateRequest request)
     {
         try
         {
             var organizerModel = OrganizerMapper.OrganizerUpdateToModel(request);
-            organizerModel = _organizerService.UpdateOrganizer(new Guid(organizerId), organizerModel);
+
+            organizerModel = await _mediator.Send(new UpdateOrganizerCommand { OrganizerId = new Guid(organizerId), OrganizerUpdateRequest = request });
 
             return Ok(organizerModel);
         }
@@ -85,33 +71,13 @@ public class OrganizerController(IOrganizerService organizerService) : Controlle
     }
 
     [HttpDelete("{organizerId}")]
-    public IActionResult DeleteOrganizer(string organizerId)
+    public async Task<IActionResult> DeleteOrganizer(string organizerId)
     {
         try
         {
-            _organizerService.DeleteOrganizer(new Guid(organizerId));
+            await _mediator.Send(new DeleteOrganizerCommand { OrganizerId = new Guid(organizerId) });
 
             return Ok(organizerId);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("events/{eventId}")]
-    public IActionResult GetOrganizersByEventId(string eventId)
-    {
-        try
-        {
-            var organizerModels = _organizerService.GetOrganizersByEventId(new Guid(eventId));
-            var organizerResponses = organizerModels.Select(m => OrganizerMapper.ModelToReponse(m)).ToArray();
-
-            return Ok(organizerResponses);
         }
         catch (NotFoundException ex)
         {

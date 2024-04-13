@@ -1,20 +1,15 @@
 using MediatR;
 using SportEvents.Application.Abstractions.Persistence.Repositories;
+using SportEvents.Application.Events.Commands;
 
 namespace SportEvents.Application.Events.Handlers;
 
-public class DeleteParticipantHandler : IRequestHandler<DeleteParticipantCommand>
+public class DeleteParticipantHandler(IParticipantRepository participantRepository) : IRequestHandler<DeleteParticipantCommand, Guid>
 {
-    private readonly IParticipantRepository _participantRepository;
+    private readonly IParticipantRepository _participantRepository = participantRepository;
 
-    public DeleteParticipantHandler(IParticipantRepository participantRepository)
+    public Task<Guid> Handle(DeleteParticipantCommand request, CancellationToken cancellationToken)
     {
-        _participantRepository = participantRepository;
-    }
-
-    public async Task<Unit> Handle(DeleteParticipantCommand request, CancellationToken cancellationToken)
-    {
-        await _participantRepository.DeleteParticipant(request.ParticipantId);
-        return Unit.Value;
+        return _participantRepository.DeleteParticipant(request.ParticipantId);
     }
 }

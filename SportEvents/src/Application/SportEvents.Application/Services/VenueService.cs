@@ -8,7 +8,7 @@ public class VenueService(IVenueRepository venueRepository) : IVenueService
 {
     private readonly IVenueRepository _venueRepository = venueRepository;
 
-    public VenueModel CreateVenue(VenueModel model)
+    public Task<VenueModel> CreateVenue(VenueModel model)
     {
         if (model.Capacity <= 0)
         {
@@ -23,22 +23,22 @@ public class VenueService(IVenueRepository venueRepository) : IVenueService
         _venueRepository.DeleteVenue(venueId);
     }
 
-    public VenueModel GetVenueById(Guid venueId)
+    public Task<VenueModel> GetVenueById(Guid venueId)
     {
         return _venueRepository.GetVenueById(venueId);
     }
 
-    public IList<VenueModel> GetVenues()
+    public Task<IList<VenueModel>> GetVenues()
     {
         return _venueRepository.GetVenues();
     }
 
-    public IList<VenueModel> GetVenuesByEventId(Guid eventId)
+    public Task<IList<VenueModel>> GetVenuesByEventId(Guid eventId)
     {
         return _venueRepository.GetVenuesByEventId(eventId);
     }
 
-    public VenueModel UpdateVenue(Guid venueId, VenueModel model)
+    public Task<VenueModel> UpdateVenue(Guid venueId, VenueModel model)
     {
         if (model.Capacity <= 0)
         {

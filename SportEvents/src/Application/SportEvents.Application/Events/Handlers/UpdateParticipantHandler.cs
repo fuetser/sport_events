@@ -1,24 +1,25 @@
 using MediatR;
 using SportEvents.Application.Abstractions.Persistence.Repositories;
+using SportEvents.Application.Events.Commands;
 using SportEvents.Application.Models.Models;
 
 namespace SportEvents.Application.Events.Handlers;
 
-public class UpdateParticipantHandler : IRequestHandler<UpdateParticipantCommand, ParticipantModel>
+public class UpdateParticipantHandler(IParticipantRepository participantRepository) : IRequestHandler<UpdateParticipantCommand, ParticipantModel>
 {
-    private readonly IParticipantRepository _participantRepository;
+    private readonly IParticipantRepository _participantRepository = participantRepository;
 
-    public UpdateParticipantHandler(IParticipantRepository participantRepository)
-    {
-        _participantRepository = participantRepository;
-    }
-
-    public async Task<ParticipantModel> Handle(UpdateParticipantCommand request, CancellationToken cancellationToken)
+    public Task<ParticipantModel> Handle(UpdateParticipantCommand request, CancellationToken cancellationToken)
     {
         var participant = new ParticipantModel
         {
-            // Initialize the ParticipantModel properties from request.ParticipantUpdateRequest
+            Id = Guid.Empty,
+            Name = request.ParticipantUpdateRequest.Name,
+            DateOfBirth = request.ParticipantUpdateRequest.DateOfBirth,
+            Email = request.ParticipantUpdateRequest.Email,
+            Phone = request.ParticipantUpdateRequest.Phone,
+            Gender = request.ParticipantUpdateRequest.Gender,
         };
-        return await _participantRepository.UpdateParticipant(request.ParticipantId, participant);
+        return _participantRepository.UpdateParticipant(request.ParticipantId, participant);
     }
 }
