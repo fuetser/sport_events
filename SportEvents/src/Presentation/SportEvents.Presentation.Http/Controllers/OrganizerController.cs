@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SportEvents.Application.Contracts;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
@@ -10,39 +11,6 @@ namespace SportEvents.Presentation.Http.Controllers;
 public class OrganizerController(IOrganizerService organizerService) : ControllerBase
 {
     private readonly IOrganizerService _organizerService = organizerService;
-
-    [HttpPost]
-    public IActionResult CreateOrganizer(OrganizerCreateRequest request)
-    {
-        try
-        {
-            var organizerModel = OrganizerMapper.OrganizerCreateToModel(request);
-            organizerModel = _organizerService.CreateOrganizer(organizerModel);
-            var organizerResponse = OrganizerMapper.ModelToReponse(organizerModel);
-
-            return Ok(organizerResponse);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet]
-    public IActionResult GetOrganizers()
-    {
-        try
-        {
-            var organizerModels = _organizerService.GetOrganizers();
-            var organizerResponses = organizerModels.Select(m => OrganizerMapper.ModelToReponse(m)).ToArray();
-
-            return Ok(organizerResponses);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
 
     [HttpGet("{organizerId}")]
     public IActionResult GetOrganizer(string organizerId)
@@ -56,11 +24,37 @@ public class OrganizerController(IOrganizerService organizerService) : Controlle
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
+        }
+    }
+
+    [HttpPost]
+    public IActionResult CreateOrganizer(OrganizerCreateRequest request)
+    {
+        try
+        {
+            var organizerModel = OrganizerMapper.OrganizerCreateToModel(request);
+            organizerModel = _organizerService.CreateOrganizer(organizerModel);
+            var organizerResponse = OrganizerMapper.ModelToReponse(organizerModel);
+
+            return Ok(organizerResponse);
+        }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -74,13 +68,22 @@ public class OrganizerController(IOrganizerService organizerService) : Controlle
 
             return Ok(organizerModel);
         }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -91,35 +94,15 @@ public class OrganizerController(IOrganizerService organizerService) : Controlle
         {
             _organizerService.DeleteOrganizer(new Guid(organizerId));
 
-            return Ok(organizerId);
+            return Ok(new { id = organizerId });
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("events/{eventId}")]
-    public IActionResult GetOrganizersByEventId(string eventId)
-    {
-        try
-        {
-            var organizerModels = _organizerService.GetOrganizersByEventId(new Guid(eventId));
-            var organizerResponses = organizerModels.Select(m => OrganizerMapper.ModelToReponse(m)).ToArray();
-
-            return Ok(organizerResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 }

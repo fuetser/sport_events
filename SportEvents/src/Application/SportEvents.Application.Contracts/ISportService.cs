@@ -3,13 +3,7 @@
 namespace SportEvents.Application.Contracts;
 public interface ISportService
 {
-    IList<SportModel> GetSports();
-
     SportModel GetSportById(Guid sportId);
-
-    IList<SportModel> GetSportsByEventId(Guid eventId);
-
-    SportModel GetSportByTeamId(Guid teamId);
 
     SportModel CreateSport(SportModel model);
 

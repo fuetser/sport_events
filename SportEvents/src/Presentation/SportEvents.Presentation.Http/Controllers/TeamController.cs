@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SportEvents.Application.Contracts;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
@@ -11,6 +12,26 @@ public class TeamController(ITeamService teamService) : ControllerBase
 {
     private readonly ITeamService _teamService = teamService;
 
+    [HttpGet("{teamId}")]
+    public IActionResult GetTeamById(string teamId)
+    {
+        try
+        {
+            var teamModel = _teamService.GetTeamById(new Guid(teamId));
+            var teamResponse = TeamMapper.ModelToReponse(teamModel);
+
+            return Ok(teamResponse);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { detail = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { detail = ex.Message });
+        }
+    }
+
     [HttpPost]
     public IActionResult CreateTeam(TeamCreateRequest request)
     {
@@ -22,9 +43,18 @@ public class TeamController(ITeamService teamService) : ControllerBase
 
             return Ok(teamResponse);
         }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -39,69 +69,22 @@ public class TeamController(ITeamService teamService) : ControllerBase
 
             return Ok(teamResponse);
         }
-        catch (NotFoundException ex)
+        catch (DbUpdateException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
+            var message = "Bad request";
 
-    [HttpGet]
-    public IActionResult GetTeams()
-    {
-        try
-        {
-            var teamModels = _teamService.GetTeams();
-            var teamResponses = teamModels.Select(t => TeamMapper.ModelToReponse(t)).ToList();
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
 
-            return Ok(teamResponses);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("{teamId}")]
-    public IActionResult GetTeamById(string teamId)
-    {
-        try
-        {
-            var teamModel = _teamService.GetTeamById(new Guid(teamId));
-            var teamResponse = TeamMapper.ModelToReponse(teamModel);
-
-            return Ok(teamResponse);
+            return BadRequest(new { detail = message });
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("participant/{participantId}")]
-    public IActionResult GetTeamByParticipantId(string participantId)
-    {
-        try
-        {
-            var teamModels = _teamService.GetTeamsByParticipantId(new Guid(participantId));
-            var teamResponses = teamModels.Select(t => TeamMapper.ModelToReponse(t)).ToList();
-
-            return Ok(teamResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -112,15 +95,15 @@ public class TeamController(ITeamService teamService) : ControllerBase
         {
             _teamService.DeleteTeam(new Guid(teamId));
 
-            return Ok(teamId);
+            return Ok(new { id = teamId });
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 }

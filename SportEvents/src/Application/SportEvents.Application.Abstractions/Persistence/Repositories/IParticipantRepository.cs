@@ -3,12 +3,6 @@
 namespace SportEvents.Application.Abstractions.Persistence.Repositories;
 public interface IParticipantRepository
 {
-    IList<ParticipantModel> GetParticipants();
-
-    IList<ParticipantModel> GetParticipantsByEventId(Guid eventId);
-
-    IList<ParticipantModel> GetParticipantsByTeamId(Guid teamId);
-
     ParticipantModel GetParticipantById(Guid participantId);
 
     ParticipantModel CreateParticipant(ParticipantModel model);

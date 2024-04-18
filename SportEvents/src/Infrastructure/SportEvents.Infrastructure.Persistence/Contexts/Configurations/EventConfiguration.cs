@@ -27,6 +27,24 @@ public class EventConfiguration : IEntityTypeConfiguration<EEvent>
         builder.Property(e => e.EndTime)
             .HasColumnName("end_time")
             .HasColumnType("timestamp with time zone");
+        builder.HasOne(t => t.Venue)
+            .WithMany(s => s.Events)
+            .HasForeignKey(t => t.VenueId)
+            .IsRequired()
+            .HasConstraintName("VenueId")
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(t => t.Sport)
+            .WithMany(s => s.Events)
+            .HasForeignKey(t => t.SportId)
+            .IsRequired()
+            .HasConstraintName("SportId")
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(t => t.Organizer)
+            .WithMany(s => s.Events)
+            .HasForeignKey(t => t.OrganizerId)
+            .IsRequired()
+            .HasConstraintName("OrganizerId")
+            .OnDelete(DeleteBehavior.Cascade);
         builder.ToTable("events");
     }
 }

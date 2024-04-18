@@ -7,48 +7,33 @@ public class EventService(IEventRepository eventRepository) : IEventService
 {
     private readonly IEventRepository _eventRepository = eventRepository;
 
-    public EventModel CreateEvent(EventModel model)
-    {
-        return _eventRepository.CreateEvent(model);
-    }
-
-    public void DeleteEvent(Guid eventId)
-    {
-        _eventRepository.DeleteEvent(eventId);
-    }
-
     public EventModel GetEventById(Guid eventId)
     {
         return _eventRepository.GetEventById(eventId);
     }
 
-    public IList<EventModel> GetEvents()
+    public EventModel CreateEvent(EventModel model)
     {
-        return _eventRepository.GetEvents();
-    }
+        if (model.StartTime.CompareTo(model.EndTime) >= 0)
+        {
+            throw new ArgumentException("Start time must be less than end time");
+        }
 
-    public IList<EventModel> GetEventsByOrganizerId(Guid organizerId)
-    {
-        return _eventRepository.GetEventsByOrganizerId(organizerId);
-    }
-
-    public IList<EventModel> GetEventsBySportId(Guid sportId)
-    {
-        return _eventRepository.GetEventsBySportId(sportId);
-    }
-
-    public IList<EventModel> GetEventsBySportInTimeRange(Guid sportId, DateTime startTime, DateTime endTime)
-    {
-        return _eventRepository.GetEventsBySportInTimeRange(sportId, startTime, endTime);
-    }
-
-    public IList<EventModel> GetEventsInTimeRange(DateTime startTime, DateTime endTime)
-    {
-        return _eventRepository.GetEventsInTimeRange(startTime, endTime);
+        return _eventRepository.CreateEvent(model);
     }
 
     public EventModel UpdateEvent(Guid eventId, EventModel model)
     {
+        if (model.StartTime.CompareTo(model.EndTime) >= 0)
+        {
+            throw new ArgumentException("Start time must be less than end time");
+        }
+
         return _eventRepository.UpdateEvent(eventId, model);
+    }
+
+    public void DeleteEvent(Guid eventId)
+    {
+        _eventRepository.DeleteEvent(eventId);
     }
 }

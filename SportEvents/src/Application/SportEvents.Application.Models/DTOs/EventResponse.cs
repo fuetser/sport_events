@@ -4,4 +4,7 @@ public record EventResponse(
     string Title,
     string Description,
     DateTime StartDate,
-    DateTime EndDate);
+    DateTime EndDate,
+    Guid VenueId,
+    Guid SportId,
+    Guid OrganizerId);

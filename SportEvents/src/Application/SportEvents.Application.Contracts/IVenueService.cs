@@ -3,10 +3,6 @@
 namespace SportEvents.Application.Contracts;
 public interface IVenueService
 {
-    IList<VenueModel> GetVenues();
-
-    IList<VenueModel> GetVenuesByEventId(Guid eventId);
-
     VenueModel GetVenueById(Guid venueId);
 
     VenueModel CreateVenue(VenueModel model);

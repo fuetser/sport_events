@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SportEvents.Application.Contracts;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
@@ -11,19 +12,23 @@ public class VenueController(IVenueService venueService) : ControllerBase
 {
     private readonly IVenueService _venueService = venueService;
 
-    [HttpGet]
-    public IActionResult GetVenues()
+    [HttpGet("{venueId}")]
+    public IActionResult GetVenueById(string venueId)
     {
         try
         {
-            var venueModels = _venueService.GetVenues();
-            var venueResponses = venueModels.Select(v => VenueMapper.ModelToReponse(v)).ToList();
+            var venueModel = _venueService.GetVenueById(new Guid(venueId));
+            var venueResponse = VenueMapper.ModelToReponse(venueModel);
 
-            return Ok(venueResponses);
+            return Ok(venueResponse);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -38,9 +43,18 @@ public class VenueController(IVenueService venueService) : ControllerBase
 
             return Ok(venueResponse);
         }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -55,13 +69,22 @@ public class VenueController(IVenueService venueService) : ControllerBase
 
             return Ok(venueResponse);
         }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -72,55 +95,15 @@ public class VenueController(IVenueService venueService) : ControllerBase
         {
             _venueService.DeleteVenue(new Guid(venueId));
 
-            return Ok(venueId);
+            return Ok(new { id = venueId });
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("{venueId}")]
-    public IActionResult GetVenueById(string venueId)
-    {
-        try
-        {
-            var venueModel = _venueService.GetVenueById(new Guid(venueId));
-            var venueResponse = VenueMapper.ModelToReponse(venueModel);
-
-            return Ok(venueResponse);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("event/{eventId}")]
-    public IActionResult GetVenuesByEventId(string eventId)
-    {
-        try
-        {
-            var venueModels = _venueService.GetVenuesByEventId(new Guid(eventId));
-            var venueResponses = venueModels.Select(v => VenueMapper.ModelToReponse(v)).ToList();
-
-            return Ok(venueResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 }

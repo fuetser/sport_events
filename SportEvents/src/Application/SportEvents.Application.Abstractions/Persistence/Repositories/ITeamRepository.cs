@@ -3,11 +3,7 @@
 namespace SportEvents.Application.Abstractions.Persistence.Repositories;
 public interface ITeamRepository
 {
-    IList<TeamModel> GetTeams();
-
     TeamModel GetTeamById(Guid teamId);
-
-    IList<TeamModel> GetTeamsByParticipantId(Guid participantId);
 
     TeamModel CreateTeam(TeamModel model);
 

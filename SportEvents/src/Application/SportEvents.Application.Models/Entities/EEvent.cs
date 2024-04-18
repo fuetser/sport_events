@@ -11,11 +11,17 @@ public class EEvent
 
     public DateTime EndTime { get; set; }
 
-    public IList<Venue> Venues { get; } = [];
+    public Guid VenueId { get; set; }
 
-    public IList<Sport> Sports { get; } = [];
+    public Guid SportId { get; set; }
 
-    public IList<Organizer> Organizers { get; } = [];
+    public Guid OrganizerId { get; set; }
+
+    public Venue Venue { get; set; } = null!;
+
+    public Sport Sport { get; set; } = null!;
+
+    public Organizer Organizer { get; set; } = null!;
 
     public IList<Participant> Participants { get; } = [];
 }

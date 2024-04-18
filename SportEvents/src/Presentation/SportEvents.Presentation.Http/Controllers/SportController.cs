@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SportEvents.Application.Contracts;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
@@ -11,19 +12,23 @@ public class SportController(ISportService sportService) : ControllerBase
 {
     private readonly ISportService _sportService = sportService;
 
-    [HttpGet]
-    public IActionResult GetSports()
+    [HttpGet("{sportId}")]
+    public IActionResult GetSportById(string sportId)
     {
         try
         {
-            var sportModels = _sportService.GetSports();
-            var sportResponses = sportModels.Select(s => SportMapper.ModelToReponse(s)).ToList();
+            var sportModel = _sportService.GetSportById(new Guid(sportId));
+            var sportResponse = SportMapper.ModelToReponse(sportModel);
 
-            return Ok(sportResponses);
+            return Ok(sportResponse);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -38,9 +43,18 @@ public class SportController(ISportService sportService) : ControllerBase
 
             return Ok(sportResponse);
         }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -55,13 +69,22 @@ public class SportController(ISportService sportService) : ControllerBase
 
             return Ok(sportResponse);
         }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -72,75 +95,15 @@ public class SportController(ISportService sportService) : ControllerBase
         {
             _sportService.DeleteSport(new Guid(sportId));
 
-            return Ok(sportId);
+            return Ok(new { id = sportId });
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("{sportId}")]
-    public IActionResult GetSportById(string sportId)
-    {
-        try
-        {
-            var sportModel = _sportService.GetSportById(new Guid(sportId));
-            var sportResponse = SportMapper.ModelToReponse(sportModel);
-
-            return Ok(sportResponse);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("event/{eventId}")]
-    public IActionResult GetSportsByEventId(string eventId)
-    {
-        try
-        {
-            var sportModels = _sportService.GetSportsByEventId(new Guid(eventId));
-            var sportResponses = sportModels.Select(s => SportMapper.ModelToReponse(s)).ToArray();
-
-            return Ok(sportResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("team/{teamId}")]
-    public IActionResult GetSportByTeamId(string teamId)
-    {
-        try
-        {
-            var sportModel = _sportService.GetSportByTeamId(new Guid(teamId));
-            var sportResponse = SportMapper.ModelToReponse(sportModel);
-
-            return Ok(sportResponse);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 }

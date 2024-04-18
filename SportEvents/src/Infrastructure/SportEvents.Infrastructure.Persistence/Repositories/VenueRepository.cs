@@ -10,125 +10,41 @@ public class VenueRepository(ApplicationDbContext context) : IVenueRepository
 {
     private readonly ApplicationDbContext _context = context;
 
-    public VenueModel CreateVenue(VenueModel model)
-    {
-        try
-        {
-            Venue venue = VenueMapper.ModelToEntity(model);
-
-            _context.Venues.Add(venue);
-            _context.SaveChanges();
-
-            return model;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
-    }
-
-    public void DeleteVenue(Guid venueId)
-    {
-        try
-        {
-            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
-
-            _context.Venues.Remove(venue);
-            _context.SaveChanges();
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
-    }
-
     public VenueModel GetVenueById(Guid venueId)
     {
-        try
-        {
-            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
-            return VenueMapper.EntityToModel(venue);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
+        Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
+        return VenueMapper.EntityToModel(venue);
     }
 
-    public IList<VenueModel> GetVenues()
+    public VenueModel CreateVenue(VenueModel model)
     {
-        try
-        {
-            var venueModels = _context.Venues.ToList();
-            return ConvertVenuesToModels(venueModels);
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
-    }
+        Venue venue = VenueMapper.ModelToEntity(model);
 
-    public IList<VenueModel> GetVenuesByEventId(Guid eventId)
-    {
-        try
-        {
-            var targetEvent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
-            return ConvertVenuesToModels(targetEvent.Venues);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
+        _context.Venues.Add(venue);
+        _context.SaveChanges();
+
+        return model;
     }
 
     public VenueModel UpdateVenue(Guid venueId, VenueModel model)
     {
-        try
-        {
-            Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
+        Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
 
-            venue.Name = model.Name;
-            venue.Description = model.Description;
-            venue.Address = model.Address;
-            venue.Capacity = model.Capacity;
+        venue.Name = model.Name;
+        venue.Description = model.Description;
+        venue.Address = model.Address;
+        venue.Capacity = model.Capacity;
 
-            _context.SaveChanges();
+        _context.SaveChanges();
 
-            return VenueMapper.EntityToModel(venue);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
+        return VenueMapper.EntityToModel(venue);
     }
 
-    private List<VenueModel> ConvertVenuesToModels(IList<Venue> venues)
+    public void DeleteVenue(Guid venueId)
     {
-        var venueModels = new List<VenueModel>(venues.Count);
-        foreach (var venue in venues)
-        {
-            if (venue is null)
-                continue;
+        Venue venue = _context.Venues.Find(venueId) ?? throw new NotFoundException($"Venue with id {venueId} not found");
 
-            venueModels.Add(VenueMapper.EntityToModel(venue));
-        }
-
-        return venueModels;
+        _context.Venues.Remove(venue);
+        _context.SaveChanges();
     }
 }

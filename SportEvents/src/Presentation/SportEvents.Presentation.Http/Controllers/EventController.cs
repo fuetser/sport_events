@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SportEvents.Application.Contracts;
 using SportEvents.Application.Exceptions;
 using SportEvents.Application.Models.DTOs;
@@ -10,98 +11,6 @@ namespace SportEvents.Presentation.Http.Controllers;
 public class EventController(IEventService eventService) : ControllerBase
 {
     private readonly IEventService _eventService = eventService;
-
-    [HttpGet]
-    public IActionResult GetEvents()
-    {
-        try
-        {
-            var events = _eventService.GetEvents();
-            var eventResponses = events.Select(e => EventMapper.ModelToReponse(e)).ToArray();
-
-            return Ok(eventResponses);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("sport/{sportId}")]
-    public IActionResult GetEventsBySportId(string sportId)
-    {
-        try
-        {
-            var events = _eventService.GetEventsBySportId(new Guid(sportId));
-            var eventResponses = events.Select(e => EventMapper.ModelToReponse(e)).ToArray();
-
-            return Ok(eventResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("time")]
-    public IActionResult GetEventsInTimeRange([FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
-    {
-        try
-        {
-            var events = _eventService.GetEventsInTimeRange(startTime, endTime);
-            var eventResponses = events.Select(e => EventMapper.ModelToReponse(e)).ToArray();
-
-            return Ok(eventResponses);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("sport/{sportId}/time")]
-    public IActionResult GetEventsBySportInTimeRange(string sportId, [FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
-    {
-        try
-        {
-            var events = _eventService.GetEventsBySportInTimeRange(new Guid(sportId), startTime, endTime);
-            var eventResponses = events.Select(e => EventMapper.ModelToReponse(e)).ToArray();
-
-            return Ok(eventResponses);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
-
-    [HttpGet("organizer/{organizerId}")]
-    public IActionResult GetEventsByOrganizerId(string organizerId)
-    {
-        try
-        {
-            var events = _eventService.GetEventsByOrganizerId(new Guid(organizerId));
-            var eventResponses = events.Select(e => EventMapper.ModelToReponse(e)).ToArray();
-
-            return Ok(events);
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(new { errors = new List<string> { ex.Message } });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
-        }
-    }
 
     [HttpGet("{eventId}")]
     public IActionResult GetEventById(string eventId)
@@ -115,11 +24,11 @@ public class EventController(IEventService eventService) : ControllerBase
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -134,9 +43,18 @@ public class EventController(IEventService eventService) : ControllerBase
 
             return Ok(eventResponse);
         }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -151,13 +69,22 @@ public class EventController(IEventService eventService) : ControllerBase
 
             return Ok(eventResponse);
         }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 
@@ -167,15 +94,15 @@ public class EventController(IEventService eventService) : ControllerBase
         try
         {
             _eventService.DeleteEvent(new Guid(eventId));
-            return Ok(eventId);
+            return Ok(new { id = eventId });
         }
         catch (NotFoundException ex)
         {
-            return NotFound(new { errors = new List<string> { ex.Message } });
+            return NotFound(new { detail = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { errors = new List<string> { ex.Message } });
+            return StatusCode(500, new { detail = ex.Message });
         }
     }
 }

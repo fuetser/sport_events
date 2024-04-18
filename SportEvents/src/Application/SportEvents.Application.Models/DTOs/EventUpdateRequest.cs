@@ -3,4 +3,7 @@ public record EventUpdateRequest(
      string Title,
      string Description,
      DateTime StartTime,
-     DateTime EndTime);
+     DateTime EndTime,
+     Guid VenueId,
+     Guid SportId,
+     Guid OrganizerId);

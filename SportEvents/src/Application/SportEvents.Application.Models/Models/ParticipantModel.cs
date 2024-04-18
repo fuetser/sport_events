@@ -12,4 +12,8 @@ public class ParticipantModel
     public string Phone { get; set; } = null!;
 
     public string Gender { get; set; } = null!;
+
+    public Guid EventId { get; set; }
+
+    public Guid TeamId { get; set; }
 }

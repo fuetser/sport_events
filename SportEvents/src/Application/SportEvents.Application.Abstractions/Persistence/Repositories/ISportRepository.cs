@@ -3,13 +3,7 @@
 namespace SportEvents.Application.Abstractions.Persistence.Repositories;
 public interface ISportRepository
 {
-    IList<SportModel> GetSports();
-
     SportModel GetSportById(Guid sportId);
-
-    IList<SportModel> GetSportsByEventId(Guid eventId);
-
-    SportModel GetSportByTeamId(Guid teamId);
 
     SportModel CreateSport(SportModel model);
 

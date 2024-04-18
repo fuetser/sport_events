@@ -3,10 +3,6 @@
 namespace SportEvents.Application.Abstractions.Persistence.Repositories;
 public interface IVenueRepository
 {
-    IList<VenueModel> GetVenues();
-
-    IList<VenueModel> GetVenuesByEventId(Guid eventId);
-
     VenueModel GetVenueById(Guid venueId);
 
     VenueModel CreateVenue(VenueModel model);

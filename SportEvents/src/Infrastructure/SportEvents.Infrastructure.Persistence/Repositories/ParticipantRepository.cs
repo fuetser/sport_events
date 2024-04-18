@@ -10,142 +10,41 @@ public class ParticipantRepository(ApplicationDbContext context) : IParticipantR
 {
     private readonly ApplicationDbContext _context = context;
 
-    public ParticipantModel CreateParticipant(ParticipantModel model)
-    {
-        try
-        {
-            Participant participant = ParticipantMapper.ModelToEntity(model);
-
-            _context.Participants.Add(participant);
-            _context.SaveChanges();
-
-            return model;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
-    }
-
-    public void DeleteParticipant(Guid participantId)
-    {
-        try
-        {
-            Participant participant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
-            _context.Participants.Remove(participant);
-            _context.SaveChanges();
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
-    }
-
     public ParticipantModel GetParticipantById(Guid participantId)
     {
-        try
-        {
-            Participant participant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
-            return ParticipantMapper.EntityToModel(participant);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
+        Participant participant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
+        return ParticipantMapper.EntityToModel(participant);
     }
 
-    public IList<ParticipantModel> GetParticipants()
+    public ParticipantModel CreateParticipant(ParticipantModel model)
     {
-        try
-        {
-            var participants = _context.Participants.ToList();
-            return ConvertParticipantsToModels(participants);
-        }
-        catch (Exception)
-        {
-            return [];
-        }
-    }
+        Participant participant = ParticipantMapper.ModelToEntity(model);
 
-    public IList<ParticipantModel> GetParticipantsByEventId(Guid eventId)
-    {
-        try
-        {
-            EEvent targetEvent = _context.Events.Find(eventId) ?? throw new NotFoundException($"Event with id {eventId} not found");
-            return ConvertParticipantsToModels(targetEvent.Participants);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
-    }
+        _context.Participants.Add(participant);
+        _context.SaveChanges();
 
-    public IList<ParticipantModel> GetParticipantsByTeamId(Guid teamId)
-    {
-        try
-        {
-            Team targetTeam = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
-            return ConvertParticipantsToModels(targetTeam.Participants);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
+        return model;
     }
 
     public ParticipantModel UpdateParticipant(Guid participantId, ParticipantModel model)
     {
-        try
-        {
-            var participant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
+        var participant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
 
-            participant.Name = model.Name;
-            participant.DateOfBirth = model.DateOfBirth;
-            participant.Email = model.Email;
-            participant.Phone = model.Phone;
-            participant.Gender = model.Gender;
+        participant.Name = model.Name;
+        participant.DateOfBirth = model.DateOfBirth;
+        participant.Email = model.Email;
+        participant.Phone = model.Phone;
+        participant.Gender = model.Gender;
 
-            _context.SaveChanges();
+        _context.SaveChanges();
 
-            return ParticipantMapper.EntityToModel(participant);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
+        return ParticipantMapper.EntityToModel(participant);
     }
 
-    private List<ParticipantModel> ConvertParticipantsToModels(IList<Participant> participants)
+    public void DeleteParticipant(Guid participantId)
     {
-        var participantModels = new List<ParticipantModel>(participants.Count);
-        foreach (var participant in participants)
-        {
-            if (participant is null)
-                continue;
-
-            participantModels.Add(ParticipantMapper.EntityToModel(participant));
-        }
-
-        return participantModels;
+        Participant participant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
+        _context.Participants.Remove(participant);
+        _context.SaveChanges();
     }
 }

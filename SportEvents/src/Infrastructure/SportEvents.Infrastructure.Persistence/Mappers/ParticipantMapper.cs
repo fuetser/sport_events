@@ -15,6 +15,8 @@ public class ParticipantMapper
             Email = model.Email,
             Phone = model.Phone,
             Gender = model.Gender,
+            EventId = model.EventId,
+            TeamId = model.TeamId,
         };
     }
 
@@ -28,6 +30,8 @@ public class ParticipantMapper
             Email = participant.Email,
             Phone = participant.Phone,
             Gender = participant.Gender,
+            EventId = participant.EventId,
+            TeamId = participant.TeamId,
         };
     }
 
@@ -41,6 +45,8 @@ public class ParticipantMapper
             Email = request.Email,
             Phone = request.Phone,
             Gender = request.Gender,
+            EventId = request.EventId,
+            TeamId = request.TeamId,
         };
     }
 
@@ -54,6 +60,8 @@ public class ParticipantMapper
             Email = request.Email,
             Phone = request.Phone,
             Gender = request.Gender,
+            EventId = request.EventId,
+            TeamId = request.TeamId,
         };
     }
 
@@ -65,6 +73,8 @@ public class ParticipantMapper
             DateOfBirth: model.DateOfBirth,
             Email: model.Email,
             Phone: model.Phone,
-            Gender: model.Gender);
+            Gender: model.Gender,
+            EventId: model.EventId,
+            TeamId: model.TeamId);
     }
 }

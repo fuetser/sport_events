@@ -13,7 +13,11 @@ public class Participant
 
     public string Gender { get; set; } = null!;
 
-    public IList<EEvent> Events { get; } = [];
+    public Guid EventId { get; set; }
 
-    public IList<Team> Teams { get; } = [];
+    public Guid TeamId { get; set; }
+
+    public EEvent Event { get; set; } = null!;
+
+    public Team Team { get; set; } = null!;
 }

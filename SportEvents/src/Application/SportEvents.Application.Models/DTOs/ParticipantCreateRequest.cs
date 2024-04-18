@@ -4,4 +4,6 @@ public record ParticipantCreateRequest(
     DateOnly DateOfBirth,
     string Email,
     string Phone,
-    string Gender);
+    string Gender,
+    Guid EventId,
+    Guid TeamId);

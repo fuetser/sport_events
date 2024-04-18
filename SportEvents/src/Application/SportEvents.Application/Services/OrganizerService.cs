@@ -7,33 +7,23 @@ public class OrganizerService(IOrganizerRepository organizerRepository) : IOrgan
 {
     private readonly IOrganizerRepository _organizerRepository = organizerRepository;
 
-    public OrganizerModel CreateOrganizer(OrganizerModel model)
-    {
-        return _organizerRepository.CreateOrganizer(model);
-    }
-
-    public void DeleteOrganizer(Guid organizerId)
-    {
-        _organizerRepository.DeleteOrganizer(organizerId);
-    }
-
     public OrganizerModel GetOrganizerById(Guid organizerId)
     {
         return _organizerRepository.GetOrganizerById(organizerId);
     }
 
-    public IList<OrganizerModel> GetOrganizers()
+    public OrganizerModel CreateOrganizer(OrganizerModel model)
     {
-        return _organizerRepository.GetOrganizers();
-    }
-
-    public IList<OrganizerModel> GetOrganizersByEventId(Guid eventId)
-    {
-        return _organizerRepository.GetOrganizersByEventId(eventId);
+        return _organizerRepository.CreateOrganizer(model);
     }
 
     public OrganizerModel UpdateOrganizer(Guid organizerId, OrganizerModel model)
     {
         return _organizerRepository.UpdateOrganizer(organizerId, model);
+    }
+
+    public void DeleteOrganizer(Guid organizerId)
+    {
+        _organizerRepository.DeleteOrganizer(organizerId);
     }
 }

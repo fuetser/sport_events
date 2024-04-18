@@ -10,125 +10,40 @@ public class TeamRepository(ApplicationDbContext context) : ITeamRepository
 {
     private readonly ApplicationDbContext _context = context;
 
-    public TeamModel CreateTeam(TeamModel model)
-    {
-        try
-        {
-            Team team = TeamMapper.ModelToEntity(model);
-
-            _context.Teams.Add(team);
-            _context.SaveChanges();
-
-            return model;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
-    }
-
-    public void DeleteTeam(Guid teamId)
-    {
-        try
-        {
-            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
-
-            _context.Teams.Remove(team);
-            _context.SaveChanges();
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
-    }
-
     public TeamModel GetTeamById(Guid teamId)
     {
-        try
-        {
-            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
-            return TeamMapper.EntityToModel(team);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
+        Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
+        return TeamMapper.EntityToModel(team);
     }
 
-    public IList<TeamModel> GetTeams()
+    public TeamModel CreateTeam(TeamModel model)
     {
-        try
-        {
-            var teamModels = _context.Teams.ToList();
-            return ConvertTeamsToModels(teamModels);
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
-    }
+        Team team = TeamMapper.ModelToEntity(model);
 
-    public IList<TeamModel> GetTeamsByParticipantId(Guid participantId)
-    {
-        try
-        {
-            var targetParticipant = _context.Participants.Find(participantId) ?? throw new NotFoundException($"Participant with id {participantId} not found");
+        _context.Teams.Add(team);
+        _context.SaveChanges();
 
-            return ConvertTeamsToModels(targetParticipant.Teams);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
+        return model;
     }
 
     public TeamModel UpdateTeam(Guid teamId, TeamModel model)
     {
-        try
-        {
-            Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
+        Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
 
-            team.Name = model.Name;
-            team.Description = model.Description;
-            team.SportId = model.SportId;
+        team.Name = model.Name;
+        team.Description = model.Description;
+        team.SportId = model.SportId;
 
-            _context.SaveChanges();
+        _context.SaveChanges();
 
-            return TeamMapper.EntityToModel(team);
-        }
-        catch (NotFoundException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw new InternalServerException();
-        }
+        return TeamMapper.EntityToModel(team);
     }
 
-    private List<TeamModel> ConvertTeamsToModels(IList<Team> teams)
+    public void DeleteTeam(Guid teamId)
     {
-        var teamModels = new List<TeamModel>(teams.Count);
-        foreach (var team in teams)
-        {
-            if (team is null)
-                continue;
+        Team team = _context.Teams.Find(teamId) ?? throw new NotFoundException($"Team with id {teamId} not found");
 
-            teamModels.Add(TeamMapper.EntityToModel(team));
-        }
-
-        return teamModels;
+        _context.Teams.Remove(team);
+        _context.SaveChanges();
     }
 }
