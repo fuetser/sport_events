@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SportEvents.Application.Events.Commands;
 using SportEvents.Application.Events.Queries;
 using SportEvents.Application.Exceptions;
@@ -44,6 +45,15 @@ public class ParticipantController(IMediator mediator) : ControllerBase
 
             return Ok(participantResponse);
         }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
+        }
         catch (Exception ex)
         {
             return StatusCode(500, new { detail = ex.Message });
@@ -60,6 +70,15 @@ public class ParticipantController(IMediator mediator) : ControllerBase
             var participantResponse = ParticipantMapper.ModelToReponse(participantModel);
 
             return Ok(participantResponse);
+        }
+        catch (DbUpdateException ex)
+        {
+            var message = "Bad request";
+
+            if (ex.InnerException is not null)
+                message = ex.InnerException.Message.Split("\r\n")[0];
+
+            return BadRequest(new { detail = message });
         }
         catch (NotFoundException ex)
         {
@@ -78,7 +97,7 @@ public class ParticipantController(IMediator mediator) : ControllerBase
         {
             await _mediator.Send(new DeleteParticipantCommand { ParticipantId = new Guid(participantId) });
 
-            return Ok(participantId);
+            return Ok(new { id = participantId });
         }
         catch (NotFoundException ex)
         {

@@ -14,6 +14,9 @@ public class EventMapper
             Description = model.Description,
             StartTime = model.StartTime,
             EndTime = model.EndTime,
+            VenueId = model.VenueId,
+            SportId = model.SportId,
+            OrganizerId = model.OrganizerId,
         };
     }
 
@@ -26,6 +29,9 @@ public class EventMapper
             Description = eevent.Description,
             StartTime = eevent.StartTime,
             EndTime = eevent.EndTime,
+            VenueId = eevent.VenueId,
+            SportId = eevent.SportId,
+            OrganizerId = eevent.OrganizerId,
         };
     }
 
@@ -38,6 +44,9 @@ public class EventMapper
             Description = request.Description,
             StartTime = request.StartTime,
             EndTime = request.EndTime,
+            VenueId = request.VenueId,
+            SportId = request.SportId,
+            OrganizerId = request.OrganizerId,
         };
     }
 
@@ -50,6 +59,9 @@ public class EventMapper
             Description = request.Description,
             StartTime = request.StartTime,
             EndTime = request.EndTime,
+            VenueId = request.VenueId,
+            SportId = request.SportId,
+            OrganizerId = request.OrganizerId,
         };
     }
 
@@ -60,6 +72,9 @@ public class EventMapper
             Title: model.Title,
             Description: model.Description,
             StartDate: model.StartTime,
-            EndDate: model.EndTime);
+            EndDate: model.EndTime,
+            VenueId: model.VenueId,
+            SportId: model.SportId,
+            OrganizerId: model.OrganizerId);
     }
 }

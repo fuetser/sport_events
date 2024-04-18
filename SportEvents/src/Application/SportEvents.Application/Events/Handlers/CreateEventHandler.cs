@@ -10,6 +10,11 @@ public class CreateEventHandler(IEventRepository eventRepository) : IRequestHand
 
     public Task<EventModel> Handle(CreateEventCommand request, CancellationToken cancellationToken)
     {
+        if (request.EventCreateRequest.StartTime.CompareTo(request.EventCreateRequest.EndTime) >= 0)
+        {
+            throw new ArgumentException("Start time must be less than end time");
+        }
+
         var eventModel = new EventModel
         {
             Id = Guid.NewGuid(),
@@ -17,6 +22,9 @@ public class CreateEventHandler(IEventRepository eventRepository) : IRequestHand
             Description = request.EventCreateRequest.Description,
             StartTime = request.EventCreateRequest.StartTime,
             EndTime = request.EventCreateRequest.EndTime,
+            VenueId = request.EventCreateRequest.VenueId,
+            SportId = request.EventCreateRequest.SportId,
+            OrganizerId = request.EventCreateRequest.OrganizerId,
         };
         return _eventRepository.CreateEvent(eventModel);
     }

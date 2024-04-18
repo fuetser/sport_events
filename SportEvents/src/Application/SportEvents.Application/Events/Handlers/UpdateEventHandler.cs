@@ -10,6 +10,11 @@ public class UpdateEventHandler(IEventRepository eventRepository) : IRequestHand
 
     public Task<EventModel> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
     {
+        if (request.EventUpdateRequest.StartTime.CompareTo(request.EventUpdateRequest.EndTime) >= 0)
+        {
+            throw new ArgumentException("Start time must be less than end time");
+        }
+
         var eventModel = new EventModel
         {
             Id = Guid.Empty,
@@ -17,6 +22,9 @@ public class UpdateEventHandler(IEventRepository eventRepository) : IRequestHand
             Description = request.EventUpdateRequest.Description,
             StartTime = request.EventUpdateRequest.StartTime,
             EndTime = request.EventUpdateRequest.EndTime,
+            VenueId = request.EventUpdateRequest.VenueId,
+            SportId = request.EventUpdateRequest.SportId,
+            OrganizerId = request.EventUpdateRequest.OrganizerId,
         };
         return _eventRepository.UpdateEvent(request.EventId, eventModel);
     }

@@ -22,16 +22,6 @@ public class TeamService(ITeamRepository teamRepository) : ITeamService
         return _teamRepository.GetTeamById(teamId);
     }
 
-    public Task<IList<TeamModel>> GetTeams()
-    {
-        return _teamRepository.GetTeams();
-    }
-
-    public Task<IList<TeamModel>> GetTeamsByParticipantId(Guid participantId)
-    {
-        return _teamRepository.GetTeamsByParticipantId(participantId);
-    }
-
     public Task<TeamModel> UpdateTeam(Guid teamId, TeamModel model)
     {
         return _teamRepository.UpdateTeam(teamId, model);

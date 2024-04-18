@@ -3,10 +3,6 @@
 namespace SportEvents.Application.Contracts;
 public interface IOrganizerService
 {
-    Task<IList<OrganizerModel>> GetOrganizers();
-
-    Task<IList<OrganizerModel>> GetOrganizersByEventId(Guid eventId);
-
     Task<OrganizerModel> GetOrganizerById(Guid organizerId);
 
     Task<OrganizerModel> CreateOrganizer(OrganizerModel model);

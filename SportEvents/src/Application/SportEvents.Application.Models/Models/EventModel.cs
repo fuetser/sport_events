@@ -10,4 +10,10 @@ public class EventModel
     public DateTime StartTime { get; set; }
 
     public DateTime EndTime { get; set; }
+
+    public Guid VenueId { get; set; }
+
+    public Guid SportId { get; set; }
+
+    public Guid OrganizerId { get; set; }
 }

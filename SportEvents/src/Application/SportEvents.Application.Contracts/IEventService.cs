@@ -3,16 +3,6 @@
 namespace SportEvents.Application.Contracts;
 public interface IEventService
 {
-    Task<IList<EventModel>> GetEvents();
-
-    Task<IList<EventModel>> GetEventsBySportId(Guid sportId);
-
-    Task<IList<EventModel>> GetEventsInTimeRange(DateTime startTime, DateTime endTime);
-
-    Task<IList<EventModel>> GetEventsBySportInTimeRange(Guid sportId, DateTime startTime, DateTime endTime);
-
-    Task<IList<EventModel>> GetEventsByOrganizerId(Guid organizerId);
-
     Task<EventModel> GetEventById(Guid eventId);
 
     Task<EventModel> CreateEvent(EventModel model);

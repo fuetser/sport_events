@@ -22,21 +22,6 @@ public class SportService(ISportRepository sportRepository) : ISportService
         return _sportRepository.GetSportById(sportId);
     }
 
-    public Task<SportModel> GetSportByTeamId(Guid teamId)
-    {
-        return _sportRepository.GetSportByTeamId(teamId);
-    }
-
-    public Task<IList<SportModel>> GetSports()
-    {
-        return _sportRepository.GetSports();
-    }
-
-    public Task<IList<SportModel>> GetSportsByEventId(Guid eventId)
-    {
-        return _sportRepository.GetSportsByEventId(eventId);
-    }
-
     public Task<SportModel> UpdateSport(Guid sportId, SportModel model)
     {
         return _sportRepository.UpdateSport(sportId, model);

@@ -19,6 +19,8 @@ public class UpdateParticipantHandler(IParticipantRepository participantReposito
             Email = request.ParticipantUpdateRequest.Email,
             Phone = request.ParticipantUpdateRequest.Phone,
             Gender = request.ParticipantUpdateRequest.Gender,
+            EventId = request.ParticipantUpdateRequest.EventId,
+            TeamId = request.ParticipantUpdateRequest.TeamId,
         };
         return _participantRepository.UpdateParticipant(request.ParticipantId, participant);
     }

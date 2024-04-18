@@ -19,6 +19,8 @@ public class CreateParticipantHandler(IParticipantRepository participantReposito
             Email = request.ParticipantCreateRequest.Email,
             Phone = request.ParticipantCreateRequest.Phone,
             Gender = request.ParticipantCreateRequest.Gender,
+            EventId = request.ParticipantCreateRequest.EventId,
+            TeamId = request.ParticipantCreateRequest.TeamId,
         };
         return _participantRepository.CreateParticipant(participant);
     }

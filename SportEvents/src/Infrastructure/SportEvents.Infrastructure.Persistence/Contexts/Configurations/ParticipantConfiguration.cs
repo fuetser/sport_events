@@ -32,6 +32,18 @@ public class ParticipantConfiguration : IEntityTypeConfiguration<Participant>
             .HasColumnName("gender")
             .HasColumnType("character varying")
             .IsRequired();
+        builder.HasOne(t => t.Event)
+           .WithMany(s => s.Participants)
+           .HasForeignKey(t => t.EventId)
+           .IsRequired()
+           .HasConstraintName("EventId")
+           .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(t => t.Team)
+            .WithMany(s => s.Participants)
+            .HasForeignKey(t => t.TeamId)
+            .IsRequired()
+            .HasConstraintName("TeamId")
+            .OnDelete(DeleteBehavior.Cascade);
         builder.ToTable("participants");
     }
 }

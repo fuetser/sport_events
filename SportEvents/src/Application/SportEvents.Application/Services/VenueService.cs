@@ -28,16 +28,6 @@ public class VenueService(IVenueRepository venueRepository) : IVenueService
         return _venueRepository.GetVenueById(venueId);
     }
 
-    public Task<IList<VenueModel>> GetVenues()
-    {
-        return _venueRepository.GetVenues();
-    }
-
-    public Task<IList<VenueModel>> GetVenuesByEventId(Guid eventId)
-    {
-        return _venueRepository.GetVenuesByEventId(eventId);
-    }
-
     public Task<VenueModel> UpdateVenue(Guid venueId, VenueModel model)
     {
         if (model.Capacity <= 0)

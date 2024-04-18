@@ -283,15 +283,6 @@ response - {"message": "Команда удалена"}
 ```cs
 public interface IVenueService
 {
-    List<Venue> GetVenues();
-    
-    List<Venue> GetVenuesBySport(string sportName);
-    
-    List<Venue> GetVenuesByTime(DateTime startTime, DateTime endTime);
-    
-    List<Venue> GetVenuesBySportAndTime(string sportName, DateTime startTime, DateTime endTime);
-    
-    List<Venue> GetVenuesByEvents(List<Event> events);
 
     Venue GetVenueById(int venueId);
 
@@ -301,7 +292,6 @@ public interface IVenueService
 
     void DeleteVenue(int venueId);
     
-    void DeleteVenues(List<int> venueIds);
 }
 ```
 
@@ -310,15 +300,6 @@ public interface IVenueService
 ```cs
 public interface IEventService
 {
-    List<Event> GetEvents();
-    
-    List<Event> GetEventsBySport(string sportName);
-    
-    List<Event> GetEventsInTimeRange(DateTime startTime, DateTime endTime);
-    
-    List<Event> GetEventsBySportInTimeRange(string sportName, DateTime startTime, DateTime endTime);
-    
-    List<Event> GetEventsByOrganizer(int organizerId);
 
     Event GetEventById(int eventId);
     
@@ -328,7 +309,6 @@ public interface IEventService
     
     void DeleteEvent(int eventId);
     
-    void DeleteEvents(List<int> eventIds);
 }
 ```
 
@@ -337,11 +317,6 @@ public interface IEventService
 ```cs
 public interface IOrganizerService
 {
-    List<Organizer> GetOrganizers();
-    
-    List<Organizer> GetOrganizersBySport(string sportName);
-    
-    List<Organizer> GetEventsByEvents(List<Event> events);
 
     Organizer GetOrganizerById(int organizerId);
 
@@ -351,7 +326,6 @@ public interface IOrganizerService
 
     void DeleteOrganizer(int organizerId);
     
-    void DeleteOrganizers(List<int> organizerIds);
 }
 ```
 
@@ -360,8 +334,6 @@ public interface IOrganizerService
 ```cs
 public interface ISportService
 {
-    List<Sport> GetSports();
-
     Sport GetSportById(int sportId);
     
     Sport CreateSport(Sport newSport);
@@ -377,10 +349,6 @@ public interface ISportService
 ```cs
 public interface IParticipantService
 {
-    List<Participant> GetParticipants();
-    
-    List<Participant> GetParticipantsByAttribute(string attributeName, string attributeValue);
-
     Participant GetParticipantById(int participantId);
     
     Participant CreateParticipant(Participant newParticipant);
@@ -396,8 +364,6 @@ public interface IParticipantService
 ```cs
 public interface ITeamService
 {
-    List<Team> GetTeams();
-
     Team GetTeamById(int teamId);
     
     Team CreateTeam(Team newTeam);

@@ -22,16 +22,6 @@ public class OrganizerService(IOrganizerRepository organizerRepository) : IOrgan
         return _organizerRepository.GetOrganizerById(organizerId);
     }
 
-    public Task<IList<OrganizerModel>> GetOrganizers()
-    {
-        return _organizerRepository.GetOrganizers();
-    }
-
-    public Task<IList<OrganizerModel>> GetOrganizersByEventId(Guid eventId)
-    {
-        return _organizerRepository.GetOrganizersByEventId(eventId);
-    }
-
     public Task<OrganizerModel> UpdateOrganizer(Guid organizerId, OrganizerModel model)
     {
         return _organizerRepository.UpdateOrganizer(organizerId, model);
